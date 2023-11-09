@@ -93,36 +93,31 @@ neumf_config = {
 }
 
 # Load Data
-ml1m_dir = "data/ml-1m/ratings.dat"
-ml1m_rating = pd.read_csv(
-    ml1m_dir,
-    sep="::",
-    header=None,
-    names=["uid", "mid", "rating", "timestamp"],
-    engine="python",
-)
-# Reindex
-user_id = ml1m_rating[["uid"]].drop_duplicates().reindex()
-user_id["userId"] = np.arange(len(user_id))
-ml1m_rating = pd.merge(ml1m_rating, user_id, on=["uid"], how="left")
-item_id = ml1m_rating[["mid"]].drop_duplicates()
-item_id["itemId"] = np.arange(len(item_id))
-ml1m_rating = pd.merge(ml1m_rating, item_id, on=["mid"], how="left")
-ml1m_rating = ml1m_rating[["userId", "itemId", "rating", "timestamp"]]
-print(
-    "Range of userId is [{}, {}]".format(
-        ml1m_rating.userId.min(), ml1m_rating.userId.max()
-    )
-)
-print(
-    "Range of itemId is [{}, {}]".format(
-        ml1m_rating.itemId.min(), ml1m_rating.itemId.max()
-    )
-)
+data_dir = "./data/combined_data_1.txt"
+data = []
+
+with open(data_dir, "r") as file:
+    movie_id = None
+    for line in file:
+        line = line.strip()
+        if line.endswith(":"):
+            movie_id = int(line[:-1])
+        else:
+            customer_id, rating, date = line.split(",")
+            data.append([movie_id, int(customer_id), int(rating), date])
+
+data = pd.DataFrame(data, columns=["itemId", "userId", "rating", "timestamp"])
+
+print("Range of userId is [{}, {}]".format(data.userId.min(), data.userId.max()))
+print("Range of itemId is [{}, {}]".format(data.itemId.min(), data.itemId.max()))
+
 # DataLoader for training
-sample_generator = SampleGenerator(ratings=ml1m_rating)
+sample_generator = SampleGenerator(ratings=data)
 evaluate_data = sample_generator.evaluate_data
+print("dataloader for training... done")
+
 # Specify the exact model
+print("start traing model")
 config = gmf_config
 engine = GMFEngine(config)
 # config = mlp_config
