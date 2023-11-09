@@ -74,8 +74,8 @@ class NeuMF(torch.nn.Module):
 
         cnn_matrix = torch.outer(user_embedding_cnn, item_embedding_cnn)
         for idx in range(len(self.cnn_layers) // 2):
-            cnn_matrix = self.cnn_layers[idx](mlp_vector)  # convolutional layer
-            cnn_matrix = self.cnn_layers[idx + 1](mlp_vector)  # batch normalisation
+            cnn_matrix = self.cnn_layers[idx](cnn_matrix)  # convolutional layer
+            cnn_matrix = self.cnn_layers[idx + 1](cnn_matrix)  # batch normalisation
         cnn_vector = torch.flatten(cnn_matrix)
 
         vector = torch.cat([mlp_vector, mf_vector, cnn_vector], dim=-1)
