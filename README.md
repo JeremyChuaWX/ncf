@@ -42,7 +42,7 @@ Neural collaborative filtering(NCF), is a deep learning based framework for maki
   python3 train.py -- --model="<model name here>"
   ```
 
-- Replace the filenames in `neumf_config` to point to the latest model states
+- Replace the filenames (from `./src/checkpoints`) in `neumf_config` to point to the latest model states
 
 - Run `train.py` with the "neumf" flag to train the final ensemble NCF
 
