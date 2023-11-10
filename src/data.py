@@ -76,6 +76,9 @@ class SampleGenerator(object):
         )
         test = ratings[ratings["rank_latest"] == 1]
         train = ratings[ratings["rank_latest"] > 1]
+
+        test = test[test["userId"].isin(train["userId"].unique())]
+
         assert train["userId"].nunique() == test["userId"].nunique()
         return (
             train[["userId", "itemId", "rating"]],
@@ -94,7 +97,7 @@ class SampleGenerator(object):
             lambda x: self.item_pool - x
         )
         interact_status["negative_samples"] = interact_status["negative_items"].apply(
-            lambda x: random.sample(x, 99)
+            lambda x: random.sample(list(x), 20)
         )
         return interact_status[["userId", "negative_items", "negative_samples"]]
 
@@ -107,7 +110,7 @@ class SampleGenerator(object):
             on="userId",
         )
         train_ratings["negatives"] = train_ratings["negative_items"].apply(
-            lambda x: random.sample(x, num_negatives)
+            lambda x: random.sample(list(x), num_negatives)
         )
         for row in train_ratings.itertuples():
             users.append(int(row.userId))
