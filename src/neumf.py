@@ -1,4 +1,5 @@
 import torch
+from cnn import CNN
 from gmf import GMF
 from mlp import MLP
 from engine import Engine
@@ -96,8 +97,18 @@ class NeuMF(torch.nn.Module):
         pass
 
     def load_pretrain_weights(self):
-        """Loading weights from trained MLP model & GMF model"""
+        """Loading weights from trained models"""
         config = self.config
+        config["latent_dim"] = config["latent_dim_mf"]
+        gmf_model = GMF(config)
+        if config["use_cuda"] is True:
+            gmf_model.cuda()
+        resume_checkpoint(
+            gmf_model, model_dir=config["pretrain_mf"], device_id=config["device_id"]
+        )
+        self.embedding_user_mf.weight.data = gmf_model.embedding_user.weight.data
+        self.embedding_item_mf.weight.data = gmf_model.embedding_item.weight.data
+
         config["latent_dim"] = config["latent_dim_mlp"]
         mlp_model = MLP(config)
         if config["use_cuda"] is True:
@@ -111,22 +122,31 @@ class NeuMF(torch.nn.Module):
         for idx in range(len(self.fc_layers)):
             self.fc_layers[idx].weight.data = mlp_model.fc_layers[idx].weight.data
 
-        config["latent_dim"] = config["latent_dim_mf"]
-        gmf_model = GMF(config)
+        config["latent_dim"] = config["latent_dim_cnn"]
+        cnn_model = CNN(config)
         if config["use_cuda"] is True:
-            gmf_model.cuda()
+            cnn_model.cuda()
         resume_checkpoint(
-            gmf_model, model_dir=config["pretrain_mf"], device_id=config["device_id"]
+            cnn_model, model_dir=config["pretrain_cnn"], device_id=config["device_id"]
         )
-        self.embedding_user_mf.weight.data = gmf_model.embedding_user.weight.data
-        self.embedding_item_mf.weight.data = gmf_model.embedding_item.weight.data
+
+        self.embedding_user_cnn.weight.data = cnn_model.embedding_user.weight.data
+        self.embedding_item_cnn.weight.data = cnn_model.embedding_item.weight.data
+        for idx in range(len(self.cnn_layers)):
+            self.cnn_layers[idx].weight.data = cnn_model.cnn_layers[idx].weight.data
 
         self.affine_output.weight.data = 0.5 * torch.cat(
-            [mlp_model.affine_output.weight.data, gmf_model.affine_output.weight.data],
+            [
+                mlp_model.affine_output.weight.data,
+                gmf_model.affine_output.weight.data,
+                cnn_model.affine_output.weight.data,
+            ],
             dim=-1,
         )
         self.affine_output.bias.data = 0.5 * (
-            mlp_model.affine_output.bias.data + gmf_model.affine_output.bias.data
+            mlp_model.affine_output.bias.data
+            + gmf_model.affine_output.bias.data
+            + cnn_model.affine_output.bias.data
         )
 
 

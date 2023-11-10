@@ -116,7 +116,7 @@ neumf_config = {
     "num_items": num_items,
     "latent_dim_mf": 8,
     "latent_dim_mlp": 8,
-    "latent_dim_cnn": 8,
+    "latent_dim_cnn": 9,
     "num_negative": 4,
     "layers": [
         16,
@@ -124,12 +124,11 @@ neumf_config = {
         16,
         8,
     ],  # layers[0] is the concat of latent user vector & latent item vector
-    "cnn_layers": [
-        16,
+    "channels": [
+        1,
         32,
         16,
-        8,
-    ],  # layers[0] is the concat of latent user vector & latent item vector
+    ],
     "l2_regularization": 0.01,
     "use_cuda": False,
     "device_id": 7,
@@ -138,6 +137,9 @@ neumf_config = {
         "gmf_factor8neg4_Epoch100_HR0.6391_NDCG0.2852.model"
     ),
     "pretrain_mlp": "checkpoints/{}".format(
+        "mlp_factor8neg4_Epoch100_HR0.5606_NDCG0.2463.model"
+    ),
+    "pretrain_cnn": "checkpoints/{}".format(
         "mlp_factor8neg4_Epoch100_HR0.5606_NDCG0.2463.model"
     ),
     "model_dir": "checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model",
