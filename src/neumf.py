@@ -35,22 +35,24 @@ class NeuMF(torch.nn.Module):
         )
 
         self.fc_layers = torch.nn.ModuleList()
-        for _, (in_size, out_size) in enumerate(
-            zip(config["layers"][:-1], config["layers"][1:])
-        ):
+        for in_size, out_size in zip(config["layers"][:-1], config["layers"][1:]):
             self.fc_layers.append(torch.nn.Linear(in_size, out_size))
 
         self.cnn_layers = torch.nn.ModuleList()
-        for _, (in_size, out_size) in enumerate(
-            zip(config["cnn_layers"][:-1], config["cnn_layers"][1:])
+        for in_channel, out_channel in zip(
+            config["channels"][:-1], config["channels"][1:]
         ):
-            # TODO self.cnn_layers.append(torch.nn.Conv1d(in_size, out_size))
-            self.cnn_layers.append(torch.nn.BatchNorm1d(in_size, out_size))
+            self.cnn_layers.append(
+                torch.nn.Conv2d(
+                    in_channel, out_channel, kernel_size=3, stride=1, padding=1
+                )
+            )
+            self.cnn_layers.append(torch.nn.BatchNorm2d(out_channel))
 
         self.affine_output = torch.nn.Linear(
             in_features=config["latent_dim_mf"]
             + config["layers"][-1]
-            + config["cnn_layers"][-1],
+            + (config["channels"][-1] * (self.latent_dim_cnn**2)),
             out_features=1,
         )
         self.logistic = torch.nn.Sigmoid()
@@ -72,11 +74,18 @@ class NeuMF(torch.nn.Module):
             mlp_vector = self.fc_layers[idx](mlp_vector)
             mlp_vector = torch.nn.ReLU()(mlp_vector)
 
-        cnn_matrix = torch.outer(user_embedding_cnn, item_embedding_cnn)
+        cnn_matrix = torch.einsum(
+            "bi,bj->bij", user_embedding_cnn, item_embedding_cnn
+        )  # batch outer product
+        cnn_matrix = cnn_matrix.unsqueeze(
+            1
+        )  # expand to [batch_size, in_channels, height, width]
+
         for idx in range(len(self.cnn_layers) // 2):
             cnn_matrix = self.cnn_layers[idx](cnn_matrix)  # convolutional layer
             cnn_matrix = self.cnn_layers[idx + 1](cnn_matrix)  # batch normalisation
-        cnn_vector = torch.flatten(cnn_matrix)
+
+        cnn_vector = torch.flatten(cnn_matrix, start_dim=1)
 
         vector = torch.cat([mlp_vector, mf_vector, cnn_vector], dim=-1)
         logits = self.affine_output(vector)

@@ -1,6 +1,7 @@
 import pandas as pd
 from gmf import GMFEngine
 from mlp import MLPEngine
+from cnn import CNNEngine
 from neumf import NeuMFEngine
 from data import SampleGenerator
 
@@ -25,7 +26,7 @@ print("start traing model")
 
 gmf_config = {
     "alias": "gmf",
-    "num_epoch": 200,
+    "num_epoch": 1,
     "batch_size": 1024,
     # 'optimizer': 'sgd',
     # 'sgd_lr': 1e-3,
@@ -48,8 +49,8 @@ gmf_config = {
 
 mlp_config = {
     "alias": "mlp",
-    "num_epoch": 200,
-    "batch_size": 256,  # 1024,
+    "num_epoch": 1,
+    "batch_size": 1024,
     "optimizer": "adam",
     "adam_lr": 1e-3,
     "num_users": num_users,
@@ -73,9 +74,35 @@ mlp_config = {
     "model_dir": "checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model",
 }
 
+cnn_config = {
+    "alias": "cnn",
+    "num_epoch": 1,
+    "batch_size": 1024,
+    "optimizer": "sgd",
+    "sgd_lr": 1e-3,
+    "sgd_momentum": 0.9,
+    "num_users": num_users,
+    "num_items": num_items,
+    "latent_dim": 9,
+    "num_negative": 4,
+    "channels": [
+        1,
+        32,
+        16,
+    ],
+    "l2_regularization": 0.01,
+    "use_cuda": False,
+    "device_id": 7,
+    "pretrain": False,
+    "pretrain_mf": "checkpoints/{}".format(
+        "gmf_factor8neg4_Epoch100_HR0.6391_NDCG0.2852.model"
+    ),
+    "model_dir": "checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model",
+}
+
 neumf_config = {
     "alias": "neumf",
-    "num_epoch": 200,
+    "num_epoch": 1,
     "batch_size": 1024,
     "optimizer": "adam",
     "adam_lr": 1e-3,
@@ -110,10 +137,12 @@ neumf_config = {
     "model_dir": "checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model",
 }
 
-config = gmf_config
-engine = GMFEngine(config)
+# config = gmf_config
+# engine = GMFEngine(config)
 # config = mlp_config
 # engine = MLPEngine(config)
+config = cnn_config
+engine = CNNEngine(config)
 # config = neumf_config
 # engine = NeuMFEngine(config)
 
