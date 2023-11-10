@@ -4,6 +4,12 @@ from mlp import MLPEngine
 from cnn import CNNEngine
 from neumf import NeuMFEngine
 from data import SampleGenerator
+import argparse
+
+# TODO Parse flags
+parser = argparse.ArgumentParser()
+parser.add_argument("--model", default=None, help="model to train")
+args = parser.parse_args()
 
 # Load Data
 print("load data")
@@ -137,14 +143,22 @@ neumf_config = {
     "model_dir": "checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model",
 }
 
-# config = gmf_config
-# engine = GMFEngine(config)
-# config = mlp_config
-# engine = MLPEngine(config)
-config = cnn_config
-engine = CNNEngine(config)
-# config = neumf_config
-# engine = NeuMFEngine(config)
+config, engine = None, None
+if args.model == "gmf":
+    config = gmf_config
+    engine = GMFEngine(config)
+elif args.model == "mlp":
+    config = mlp_config
+    engine = MLPEngine(config)
+elif args.model == "cnn":
+    config = cnn_config
+    engine = CNNEngine(config)
+elif args.model == "neumf":
+    config = neumf_config
+    engine = NeuMFEngine(config)
+
+assert config != None
+assert engine != None
 
 for epoch in range(config["num_epoch"]):
     print("Epoch {} starts".format(epoch))
