@@ -3,7 +3,7 @@ from cnn import CNN
 from gmf import GMF
 from mlp import MLP
 from engine import Engine
-from utils import use_cuda, resume_checkpoint
+from utils import use_cuda, use_mps, resume_checkpoint, resume_checkpoint_mps
 
 
 class NeuMF(torch.nn.Module):
@@ -103,9 +103,18 @@ class NeuMF(torch.nn.Module):
         gmf_model = GMF(config)
         if config["use_cuda"] is True:
             gmf_model.cuda()
-        resume_checkpoint(
-            gmf_model, model_dir=config["pretrain_mf"], device_id=config["device_id"]
-        )
+            resume_checkpoint(
+                gmf_model,
+                model_dir=config["pretrain_mf"],
+                device_id=config["device_id"],
+            )
+        if config["use_mps"] is True:
+            gmf_model.to("mps")
+            resume_checkpoint_mps(
+                gmf_model,
+                model_dir=config["pretrain_mf"],
+            )
+
         self.embedding_user_mf.weight.data = gmf_model.embedding_user.weight.data
         self.embedding_item_mf.weight.data = gmf_model.embedding_item.weight.data
 
@@ -113,12 +122,21 @@ class NeuMF(torch.nn.Module):
         mlp_model = MLP(config)
         if config["use_cuda"] is True:
             mlp_model.cuda()
-        resume_checkpoint(
-            mlp_model, model_dir=config["pretrain_mlp"], device_id=config["device_id"]
-        )
+            resume_checkpoint(
+                mlp_model,
+                model_dir=config["pretrain_mlp"],
+                device_id=config["device_id"],
+            )
+        if config["use_mps"] is True:
+            mlp_model.to("mps")
+            resume_checkpoint_mps(
+                mlp_model,
+                model_dir=config["pretrain_mlp"],
+            )
 
         self.embedding_user_mlp.weight.data = mlp_model.embedding_user.weight.data
         self.embedding_item_mlp.weight.data = mlp_model.embedding_item.weight.data
+
         for idx in range(len(self.fc_layers)):
             self.fc_layers[idx].weight.data = mlp_model.fc_layers[idx].weight.data
 
@@ -126,14 +144,23 @@ class NeuMF(torch.nn.Module):
         cnn_model = CNN(config)
         if config["use_cuda"] is True:
             cnn_model.cuda()
-        resume_checkpoint(
-            cnn_model, model_dir=config["pretrain_cnn"], device_id=config["device_id"]
-        )
+            resume_checkpoint(
+                cnn_model,
+                model_dir=config["pretrain_cnn"],
+                device_id=config["device_id"],
+            )
+        if config["use_mps"] is True:
+            cnn_model.to("mps")
+            resume_checkpoint_mps(
+                cnn_model,
+                model_dir=config["pretrain_cnn"],
+            )
 
         self.embedding_user_cnn.weight.data = cnn_model.embedding_user.weight.data
         self.embedding_item_cnn.weight.data = cnn_model.embedding_item.weight.data
+
         for idx in range(len(self.cnn_layers)):
-            self.cnn_layers[idx].weight.data = cnn_model.cnn_layers[idx].weight.data
+            self.cnn_layers[idx].weight.data = cnn_model.layers[idx].weight.data
 
         self.affine_output.weight.data = 0.5 * torch.cat(
             [
@@ -156,8 +183,10 @@ class NeuMFEngine(Engine):
     def __init__(self, config):
         self.model = NeuMF(config)
         if config["use_cuda"] is True:
-            use_cuda(True, config["device_id"])
+            use_cuda(config["device_id"])
             self.model.cuda()
+        if config["use_mps"]:
+            use_mps(self.model)
         super(NeuMFEngine, self).__init__(config)
         print(self.model)
 

@@ -11,6 +11,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--model", default=None, help="model to train")
 args = parser.parse_args()
 
+assert args.model != None, "No model chosen for training"
+
 # Load Data
 print("load data")
 data = pd.read_csv("./data/processed/combined1.csv")
@@ -32,7 +34,7 @@ print("start traing model")
 
 gmf_config = {
     "alias": "gmf",
-    "num_epoch": 1,
+    "num_epoch": 10,
     "batch_size": 1024,
     # 'optimizer': 'sgd',
     # 'sgd_lr': 1e-3,
@@ -49,13 +51,14 @@ gmf_config = {
     "num_negative": 4,
     "l2_regularization": 0,  # 0.01
     "use_cuda": False,
+    "use_mps": True,
     "device_id": 0,
     "model_dir": "checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model",
 }
 
 mlp_config = {
     "alias": "mlp",
-    "num_epoch": 1,
+    "num_epoch": 10,
     "batch_size": 1024,
     "optimizer": "adam",
     "adam_lr": 1e-3,
@@ -72,6 +75,7 @@ mlp_config = {
     ],  # layers[0] is the concat of latent user vector & latent item vector
     "l2_regularization": 0.0000001,  # MLP model is sensitive to hyper params
     "use_cuda": False,
+    "use_mps": True,
     "device_id": 7,
     "pretrain": False,
     "pretrain_mf": "checkpoints/{}".format(
@@ -82,7 +86,7 @@ mlp_config = {
 
 cnn_config = {
     "alias": "cnn",
-    "num_epoch": 1,
+    "num_epoch": 10,
     "batch_size": 1024,
     "optimizer": "sgd",
     "sgd_lr": 1e-3,
@@ -98,6 +102,7 @@ cnn_config = {
     ],
     "l2_regularization": 0.01,
     "use_cuda": False,
+    "use_mps": True,
     "device_id": 7,
     "pretrain": False,
     "pretrain_mf": "checkpoints/{}".format(
@@ -108,7 +113,7 @@ cnn_config = {
 
 neumf_config = {
     "alias": "neumf",
-    "num_epoch": 1,
+    "num_epoch": 10,
     "batch_size": 1024,
     "optimizer": "adam",
     "adam_lr": 1e-3,
@@ -120,6 +125,7 @@ neumf_config = {
     "num_negative": 4,
     "layers": [
         16,
+        64,
         32,
         16,
         8,
@@ -131,17 +137,12 @@ neumf_config = {
     ],
     "l2_regularization": 0.01,
     "use_cuda": False,
+    "use_mps": True,
     "device_id": 7,
     "pretrain": True,
-    "pretrain_mf": "checkpoints/{}".format(
-        "gmf_factor8neg4_Epoch100_HR0.6391_NDCG0.2852.model"
-    ),
-    "pretrain_mlp": "checkpoints/{}".format(
-        "mlp_factor8neg4_Epoch100_HR0.5606_NDCG0.2463.model"
-    ),
-    "pretrain_cnn": "checkpoints/{}".format(
-        "mlp_factor8neg4_Epoch100_HR0.5606_NDCG0.2463.model"
-    ),
+    "pretrain_mf": "checkpoints/{}".format("gmf_Epoch0_HR0.4756_NDCG0.2175.model"),
+    "pretrain_mlp": "checkpoints/{}".format("mlp_Epoch0_HR0.9039_NDCG0.6083.model"),
+    "pretrain_cnn": "checkpoints/{}".format("cnn_Epoch0_HR0.1570_NDCG0.0675.model"),
     "model_dir": "checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model",
 }
 
@@ -159,8 +160,8 @@ elif args.model == "neumf":
     config = neumf_config
     engine = NeuMFEngine(config)
 
-assert config != None
-assert engine != None
+assert config != None, "No model chosen for training"
+assert engine != None, "No model chosen for training"
 
 for epoch in range(config["num_epoch"]):
     print("Epoch {} starts".format(epoch))

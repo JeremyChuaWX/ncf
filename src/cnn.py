@@ -1,5 +1,6 @@
 import torch
 from engine import Engine
+from utils import use_cuda, use_mps
 
 
 class CNN(torch.nn.Module):
@@ -64,5 +65,10 @@ class CNNEngine(Engine):
 
     def __init__(self, config):
         self.model = CNN(config)
+        if config["use_cuda"] is True:
+            use_cuda(config["device_id"])
+            self.model.cuda()
+        if config["use_mps"]:
+            use_mps(self.model)
         super(CNNEngine, self).__init__(config)
         print(self.model)

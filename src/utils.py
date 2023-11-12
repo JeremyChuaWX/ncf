@@ -16,11 +16,23 @@ def resume_checkpoint(model, model_dir, device_id):
     model.load_state_dict(state_dict)
 
 
+def resume_checkpoint_mps(model, model_dir):
+    state_dict = torch.load(
+        model_dir, map_location="mps"
+    )  # ensure all storage are on gpu
+    model.load_state_dict(state_dict)
+
+
 # Hyper params
-def use_cuda(enabled, device_id=0):
-    if enabled:
-        assert torch.cuda.is_available(), "CUDA is not available"
-        torch.cuda.set_device(device_id)
+def use_cuda(device_id=0):
+    assert torch.cuda.is_available(), "CUDA is not available"
+    torch.cuda.set_device(device_id)
+
+
+def use_mps(model):
+    assert torch.backends.mps.is_available(), "MPS is not available"
+    mps_device = torch.device("mps")
+    model.to(mps_device)
 
 
 def use_optimizer(network, params):

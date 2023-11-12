@@ -27,8 +27,10 @@ class Engine(object):
 
     def train_single_batch(self, users, items, ratings):
         assert hasattr(self, "model"), "Please specify the exact model !"
-        if self.config["use_cuda"] is True:
+        if self.config["use_cuda"]:
             users, items, ratings = users.cuda(), items.cuda(), ratings.cuda()
+        if self.config["use_mps"]:
+            users, items, ratings = users.to("mps"), items.to("mps"), ratings.to("mps")
         self.opt.zero_grad()
         ratings_pred = self.model(users, items)
         loss = self.crit(ratings_pred.view(-1), ratings)
@@ -58,14 +60,19 @@ class Engine(object):
         with torch.no_grad():
             test_users, test_items = evaluate_data[0], evaluate_data[1]
             negative_users, negative_items = evaluate_data[2], evaluate_data[3]
-            if self.config["use_cuda"] is True:
+            if self.config["use_cuda"]:
                 test_users = test_users.cuda()
                 test_items = test_items.cuda()
                 negative_users = negative_users.cuda()
                 negative_items = negative_items.cuda()
+            if self.config["use_mps"]:
+                test_users = test_users.to("mps")
+                test_items = test_items.to("mps")
+                negative_users = negative_users.to("mps")
+                negative_items = negative_items.to("mps")
             test_scores = self.model(test_users, test_items)
             negative_scores = self.model(negative_users, negative_items)
-            if self.config["use_cuda"] is True:
+            if self.config["use_cuda"] or self.config["use_mps"]:
                 test_users = test_users.cpu()
                 test_items = test_items.cpu()
                 test_scores = test_scores.cpu()

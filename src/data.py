@@ -86,7 +86,7 @@ class SampleGenerator(object):
         )
 
     def _sample_negative(self, ratings):
-        """return all negative items & 100 sampled negative items"""
+        """return all negative items & 20 sampled negative items"""
         interact_status = (
             ratings.groupby("userId")["itemId"]
             .apply(set)
