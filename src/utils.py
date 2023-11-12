@@ -56,4 +56,10 @@ def use_optimizer(network, params):
             alpha=params["rmsprop_alpha"],
             momentum=params["rmsprop_momentum"],
         )
+    elif params["optimizer"] == "ada":
+        optimizer = torch.optim.Adagrad(
+            network.parameters(),
+            lr=params["ada_lr"],
+            weight_decay=params["l2_regularization"],
+        )
     return optimizer

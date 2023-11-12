@@ -40,15 +40,21 @@ class NeuMF(torch.nn.Module):
             self.fc_layers.append(torch.nn.Linear(in_size, out_size))
 
         self.cnn_layers = torch.nn.ModuleList()
-        for in_channel, out_channel in zip(
-            config["channels"][:-1], config["channels"][1:]
+        for _, (in_channel, out_channel) in enumerate(
+            zip(config["channels"][:-1], config["channels"][1:])
         ):
             self.cnn_layers.append(
                 torch.nn.Conv2d(
-                    in_channel, out_channel, kernel_size=3, stride=1, padding=1
+                    in_channel,
+                    out_channel,
+                    kernel_size=config["kernel_size"],
+                    stride=config["stride"],
+                    padding=config["padding"],
                 )
             )
-            self.cnn_layers.append(torch.nn.BatchNorm2d(out_channel))
+            self.latent_dim_cnn //= config["stride"]
+
+        self.relu = torch.nn.ReLU()
 
         self.affine_output = torch.nn.Linear(
             in_features=config["latent_dim_mf"]
@@ -82,9 +88,9 @@ class NeuMF(torch.nn.Module):
             1
         )  # expand to [batch_size, in_channels, height, width]
 
-        for idx in range(len(self.cnn_layers) // 2):
-            cnn_matrix = self.cnn_layers[idx](cnn_matrix)  # convolutional layer
-            cnn_matrix = self.cnn_layers[idx + 1](cnn_matrix)  # batch normalisation
+        for idx in range(len(self.cnn_layers)):
+            cnn_matrix = self.cnn_layers[idx](cnn_matrix)
+            cnn_matrix = self.relu(cnn_matrix)
 
         cnn_vector = torch.flatten(cnn_matrix, start_dim=1)
 

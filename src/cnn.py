@@ -24,16 +24,21 @@ class CNN(torch.nn.Module):
         ):
             self.layers.append(
                 torch.nn.Conv2d(
-                    in_channel, out_channel, kernel_size=3, stride=1, padding=1
+                    in_channel,
+                    out_channel,
+                    kernel_size=config["kernel_size"],
+                    stride=config["stride"],
+                    padding=config["padding"],
                 )
             )
-            self.layers.append(torch.nn.BatchNorm2d(out_channel))
+            self.latent_dim //= config["stride"]
+
+        self.relu = torch.nn.ReLU()
 
         self.affine_output = torch.nn.Linear(
             in_features=config["channels"][-1] * (self.latent_dim**2),
             out_features=1,
         )
-        self.logistic = torch.nn.Sigmoid()
 
     def forward(self, user_indices, item_indices):
         user_embedding = self.embedding_user(user_indices)
@@ -46,14 +51,13 @@ class CNN(torch.nn.Module):
             1
         )  # expand to [batch_size, in_channels, height, width]
 
-        for idx in range(len(self.layers) // 2):
-            matrix = self.layers[idx](matrix)  # convolutional layer
-            matrix = self.layers[idx + 1](matrix)  # batch normalisation
+        for idx in range(len(self.layers)):
+            matrix = self.layers[idx](matrix)
+            matrix = self.relu(matrix)
 
         vector = torch.flatten(matrix, start_dim=1)
 
-        logits = self.affine_output(vector)
-        rating = self.logistic(logits)
+        rating = self.affine_output(vector)
         return rating
 
     def init_weight(self):
