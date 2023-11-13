@@ -4,8 +4,6 @@ import pandas as pd
 from copy import deepcopy
 from torch.utils.data import DataLoader, Dataset
 
-random.seed(0)
-
 
 class UserItemRatingDataset(Dataset):
     """Wrapper, convert <user, item, rating> Tensor into Pytorch Dataset"""
@@ -75,9 +73,6 @@ class SampleGenerator(object):
         )
         test = ratings[ratings["rank_latest"] == 1]
         train = ratings[ratings["rank_latest"] > 1]
-
-        test = test[test["userId"].isin(train["userId"].unique())]
-
         assert train["userId"].nunique() == test["userId"].nunique()
         return (
             train[["userId", "itemId", "rating"]],
@@ -85,7 +80,7 @@ class SampleGenerator(object):
         )
 
     def _sample_negative(self, ratings):
-        """return all negative items & 20 sampled negative items"""
+        """return all negative items & 100 sampled negative items"""
         interact_status = (
             ratings.groupby("userId")["itemId"]
             .apply(set)
@@ -96,7 +91,7 @@ class SampleGenerator(object):
             lambda x: self.item_pool - x
         )
         interact_status["negative_samples"] = interact_status["negative_items"].apply(
-            lambda x: random.sample(list(x), 20)
+            lambda x: random.sample(list(x), 100)
         )
         return interact_status[["userId", "negative_items", "negative_samples"]]
 
