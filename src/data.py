@@ -45,9 +45,8 @@ class SampleGenerator(object):
 
         self.ratings = ratings
 
-        # explicit feedback using _normalize and implicit using _binarize
-        self.preprocess_ratings = self._normalize(ratings)
-        # self.preprocess_ratings = self._binarize(ratings)
+        self.preprocess_ratings = self._normalize(ratings)  # explicit feedback
+        # self.preprocess_ratings = self._binarize(ratings)  # implicit feedback
 
         self.user_pool = set(self.ratings["userId"].unique())
         self.item_pool = set(self.ratings["itemId"].unique())

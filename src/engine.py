@@ -1,5 +1,4 @@
 import torch
-from torch.autograd import Variable
 from tensorboardX import SummaryWriter
 
 from utils import save_checkpoint, use_optimizer
@@ -9,7 +8,7 @@ from metrics import MetronAtK
 class Engine(object):
     """Meta Engine for training & evaluating NCF model
 
-    Note: Subclass should implement self.model !
+    Note: Subclass should implement self.model!
     """
 
     def __init__(self, config):
@@ -20,17 +19,18 @@ class Engine(object):
         )  # tensorboard writer
         self._writer.add_text("config", str(config), 0)
         self.opt = use_optimizer(self.model, config)
-        # explicit feedback
-        self.crit = torch.nn.MSELoss()
-        # implicit feedback
-        # self.crit = torch.nn.BCELoss()
+
+        self.crit = torch.nn.MSELoss()  # explicit feedback
+        # self.crit = torch.nn.BCELoss()  # implicit feedback
 
     def train_single_batch(self, users, items, ratings):
-        assert hasattr(self, "model"), "Please specify the exact model !"
+        assert hasattr(self, "model"), "Please specify the exact model!"
+
         if self.config["use_cuda"]:
             users, items, ratings = users.cuda(), items.cuda(), ratings.cuda()
         if self.config["use_mps"]:
             users, items, ratings = users.to("mps"), items.to("mps"), ratings.to("mps")
+
         self.opt.zero_grad()
         ratings_pred = self.model(users, items)
         loss = self.crit(ratings_pred.view(-1), ratings)
@@ -55,23 +55,27 @@ class Engine(object):
         self._writer.add_scalar("model/loss", total_loss, epoch_id)
 
     def evaluate(self, evaluate_data, epoch_id):
-        assert hasattr(self, "model"), "Please specify the exact model !"
+        assert hasattr(self, "model"), "Please specify the exact model!"
         self.model.eval()
         with torch.no_grad():
             test_users, test_items = evaluate_data[0], evaluate_data[1]
             negative_users, negative_items = evaluate_data[2], evaluate_data[3]
+
             if self.config["use_cuda"]:
                 test_users = test_users.cuda()
                 test_items = test_items.cuda()
                 negative_users = negative_users.cuda()
                 negative_items = negative_items.cuda()
+
             if self.config["use_mps"]:
                 test_users = test_users.to("mps")
                 test_items = test_items.to("mps")
                 negative_users = negative_users.to("mps")
                 negative_items = negative_items.to("mps")
+
             test_scores = self.model(test_users, test_items)
             negative_scores = self.model(negative_users, negative_items)
+
             if self.config["use_cuda"] or self.config["use_mps"]:
                 test_users = test_users.cpu()
                 test_items = test_items.cpu()
@@ -79,6 +83,7 @@ class Engine(object):
                 negative_users = negative_users.cpu()
                 negative_items = negative_items.cpu()
                 negative_scores = negative_scores.cpu()
+
             self._metron.subjects = [
                 test_users.data.view(-1).tolist(),
                 test_items.data.view(-1).tolist(),
@@ -87,6 +92,7 @@ class Engine(object):
                 negative_items.data.view(-1).tolist(),
                 negative_scores.data.view(-1).tolist(),
             ]
+
         hit_ratio, ndcg = self._metron.cal_hit_ratio(), self._metron.cal_ndcg()
         self._writer.add_scalar("performance/HR", hit_ratio, epoch_id)
         self._writer.add_scalar("performance/NDCG", ndcg, epoch_id)
@@ -98,6 +104,6 @@ class Engine(object):
         return hit_ratio, ndcg
 
     def save(self, alias, epoch_id, hit_ratio, ndcg):
-        assert hasattr(self, "model"), "Please specify the exact model !"
+        assert hasattr(self, "model"), "Please specify the exact model!"
         model_dir = self.config["model_dir"].format(alias, epoch_id, hit_ratio, ndcg)
         save_checkpoint(self.model, model_dir)
