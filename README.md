@@ -6,25 +6,16 @@
 
 ## Files
 
-> `preprocess.py`: preprocesss Kaggle data
->
-> `data.py`: prepare train/test dataset
->
-> `utils.py`: some handy functions for model training etc.
->
-> `metrics.py`: evaluation metrics including hit ratio(HR) and NDCG
->
-> `gmf.py`: generalized matrix factorization model
->
-> `mlp.py`: multi-layer perceptron model
->
-> `cnn.py`: convolutional neural network model
->
-> `neumf.py`: fusion of gmf, mlp and cnn
->
-> `engine.py`: training engine
->
-> `train.py`: entry point for train a NCF model
+- `preprocess.py`: preprocesss Kaggle data
+- `data.py`: prepare train/test dataset
+- `utils.py`: some handy functions for model training etc.
+- `metrics.py`: evaluation metrics including hit ratio(HR) and NDCG
+- `gmf.py`: generalized matrix factorization model
+- `mlp.py`: multi-layer perceptron model
+- `cnn.py`: convolutional neural network model
+- `neumf.py`: fusion of gmf, mlp and cnn
+- `engine.py`: training engine
+- `train.py`: entry point for train a NCF model
 
 ## Instructions
 
