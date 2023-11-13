@@ -26,6 +26,7 @@ class MLP(torch.nn.Module):
         self.affine_output = torch.nn.Linear(
             in_features=config["layers"][-1], out_features=1
         )
+
         self.logistic = torch.nn.Sigmoid()
 
     def forward(self, user_indices, item_indices):

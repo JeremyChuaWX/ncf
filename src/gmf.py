@@ -20,6 +20,7 @@ class GMF(torch.nn.Module):
         self.affine_output = torch.nn.Linear(
             in_features=self.latent_dim, out_features=1
         )
+
         self.logistic = torch.nn.Sigmoid()
 
     def forward(self, user_indices, item_indices):
@@ -45,3 +46,4 @@ class GMFEngine(Engine):
         if config["use_mps"]:
             use_mps(self.model)
         super(GMFEngine, self).__init__(config)
+        print(self.model)
