@@ -1,7 +1,7 @@
 def get_configs(num_users: int, num_items: int):
     gmf_config = {
         "alias": "gmf",
-        "num_epoch": 10,
+        "num_epoch": 100,
         "batch_size": 1024,
         "optimizer": "adam",
         "adam_lr": 1e-3,
@@ -18,7 +18,7 @@ def get_configs(num_users: int, num_items: int):
 
     mlp_config = {
         "alias": "mlp",
-        "num_epoch": 10,
+        "num_epoch": 100,
         "batch_size": 1024,
         "optimizer": "adam",
         "adam_lr": 1e-3,
@@ -45,7 +45,7 @@ def get_configs(num_users: int, num_items: int):
 
     cnn_config = {
         "alias": "cnn",
-        "num_epoch": 10,
+        "num_epoch": 100,
         "batch_size": 1024,
         "optimizer": "ada",
         "ada_lr": 1e-3,
@@ -73,7 +73,7 @@ def get_configs(num_users: int, num_items: int):
 
     neumf_config = {
         "alias": "neumf",
-        "num_epoch": 10,
+        "num_epoch": 100,
         "batch_size": 1024,
         "optimizer": "adam",
         "adam_lr": 1e-3,
