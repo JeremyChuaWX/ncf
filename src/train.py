@@ -67,6 +67,4 @@ for epoch in range(config["num_epoch"]):
     )
     engine.train_an_epoch(train_loader, epoch_id=epoch)
     hit_ratio, ndcg = engine.evaluate(evaluate_data, epoch_id=epoch)
-
-    if epoch == config["num_epoch"] - 1:
-        engine.save(config["alias"], epoch, hit_ratio, ndcg)
+    engine.save(config["alias"], epoch, hit_ratio, ndcg)
