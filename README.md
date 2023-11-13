@@ -1,12 +1,8 @@
 # neural-collaborative-filtering
 
-Neural collaborative filtering(NCF), is a deep learning based framework for making recommendations. The key idea is to learn the user-item interaction using neural networks. Check the follwing paper for details about NCF.
-
-> He, Xiangnan, et al. "Neural collaborative filtering." Proceedings of the 26th International Conference on World Wide Web. International World Wide Web Conferences Steering Committee, 2017.
-
 ## Dataset
 
-[Netflix Prize Data](https://www.kaggle.com/datasets/netflix-inc/netflix-prize-data)
+[MovieLens 1M Dataset](https://grouplens.org/datasets/movielens/1m/)
 
 ## Files
 
@@ -32,7 +28,7 @@ Neural collaborative filtering(NCF), is a deep learning based framework for maki
 
 ## Instructions
 
-- Download the raw data from [Kaggle](https://www.kaggle.com/datasets/netflix-inc/netflix-prize-data)
+- Download the raw data from [grouplens](https://grouplens.org/datasets/movielens/1m/)
 
 - Create the folders
 
@@ -44,7 +40,7 @@ Neural collaborative filtering(NCF), is a deep learning based framework for maki
 
 - Run `preprocess.py` to preprocess the data
 
-- If CUDA is available or using Apple Scilicon, u can enable the gpu flags in the configs (found in `./src/config.py`) accordingly to speed up training
+- If CUDA is available or using Apple Scilicon, you can enable the gpu flags in the configs (found in `./src/config.py`) accordingly to speed up training
 
   - `use_cuda`
   - `use_mps`
@@ -69,3 +65,5 @@ Neural collaborative filtering(NCF), is a deep learning based framework for maki
   ```bash
   python3 train.py --model="neumf" --data="<processed data file>"
   ```
+
+## References

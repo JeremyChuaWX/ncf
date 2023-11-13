@@ -1,53 +1,31 @@
 import pandas as pd
 import numpy as np
-import argparse
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--datafile", default=None, help="datafile to process")
-args = parser.parse_args()
+# Load Data
+data_dir = f"./data/raw/ratings.dat"
+data = pd.read_csv(
+    data_dir,
+    sep="::",
+    header=None,
+    names=["uid", "mid", "rating", "timestamp"],
+    engine="python",
+)
 
-assert args.datafile != None, "No model chosen for training"
-
-data_dir = f"./data/raw/{args.datafile}"
-filename = (args.datafile.split("."))[0]
-data = []
-
-with open(data_dir, "r") as file:
-    movie_id = None
-    for line in file:
-        line = line.strip()
-        if line.endswith(":"):
-            movie_id = int(line[:-1])
-        else:
-            customer_id, rating, date = line.split(",")
-            data.append([movie_id, int(customer_id), int(rating), date])
-
-data = pd.DataFrame(data, columns=["itemID", "userID", "rating", "timestamp"])
-
-# convert date to timestamp
-data["timestamp"] = pd.to_datetime(data["timestamp"]).apply(lambda x: x.timestamp())
-
-# reindex IDs
-user_id = data[["userID"]].drop_duplicates().reindex()
+# Reindex
+user_id = data[["uid"]].drop_duplicates().reindex()
 user_id["userId"] = np.arange(len(user_id))
-data = pd.merge(data, user_id, on=["userID"], how="left")
+data = pd.merge(data, user_id, on=["uid"], how="left")
 
-item_id = data[["itemID"]].drop_duplicates().reindex()
+item_id = data[["mid"]].drop_duplicates().reindex()
 item_id["itemId"] = np.arange(len(item_id))
-data = pd.merge(data, item_id, on=["itemID"], how="left")
+data = pd.merge(data, item_id, on=["mid"], how="left")
 
-data = data.drop(columns=["userID", "itemID"])
+data = data[["userId", "itemId", "rating", "timestamp"]]
 
-# TODO remove users with less than 5 interactions
+print(f"Range of userId is [{data.userId.min()}, {data.userId.max()}]")
+print(f"Unique userIds {data.userId.nunique()}")
 
-# reduce rows
-NUM_USERS = 5000
-subset_user_ids = data["userId"].unique()[:NUM_USERS]
-data = data[data["userId"].isin(subset_user_ids)]
+print(f"Range of itemId is [{data.itemId.min()}, {data.itemId.max()}]")
+print(f"Unique itemIds {data.itemId.nunique()}")
 
-print(data.head())
-print("Range of userId is [{}, {}]".format(data.userId.min(), data.userId.max()))
-print("Range of itemId is [{}, {}]".format(data.itemId.min(), data.itemId.max()))
-print("Range of rating is [{}, {}]".format(data.rating.min(), data.rating.max()))
-
-data.to_csv(f"./data/processed/{filename}.csv")
+data.to_csv("./data/processed/ratings.csv")
