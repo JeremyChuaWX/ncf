@@ -51,11 +51,10 @@ def get_configs(num_users: int, num_items: int):
         "ada_lr": 1e-3,
         "num_users": num_users,
         "num_items": num_items,
-        "latent_dim": 32,
+        "latent_dim": 16,
         "num_negative": 4,
         "channels": [
             1,
-            32,
             32,
             32,
             32,
