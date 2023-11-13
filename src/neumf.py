@@ -76,6 +76,7 @@ class NeuMF(torch.nn.Module):
         mlp_vector = torch.cat(
             [user_embedding_mlp, item_embedding_mlp], dim=-1
         )  # the concat latent vector
+
         for idx in range(len(self.fc_layers)):
             mlp_vector = self.fc_layers[idx](mlp_vector)
             mlp_vector = torch.nn.ReLU()(mlp_vector)
@@ -104,6 +105,9 @@ class NeuMF(torch.nn.Module):
     def load_pretrain_weights(self):
         """Loading weights from trained models"""
         config = self.config
+
+        # gmf
+
         config["latent_dim"] = config["latent_dim_mf"]
         gmf_model = GMF(config)
         if config["use_cuda"] is True:
@@ -122,6 +126,8 @@ class NeuMF(torch.nn.Module):
 
         self.embedding_user_mf.weight.data = gmf_model.embedding_user.weight.data
         self.embedding_item_mf.weight.data = gmf_model.embedding_item.weight.data
+
+        # mlp
 
         config["latent_dim"] = config["latent_dim_mlp"]
         mlp_model = MLP(config)
@@ -145,6 +151,8 @@ class NeuMF(torch.nn.Module):
         for idx in range(len(self.fc_layers)):
             self.fc_layers[idx].weight.data = mlp_model.fc_layers[idx].weight.data
 
+        # cnn
+
         config["latent_dim"] = config["latent_dim_cnn"]
         cnn_model = CNN(config)
         if config["use_cuda"] is True:
@@ -166,6 +174,8 @@ class NeuMF(torch.nn.Module):
 
         for idx in range(len(self.cnn_layers)):
             self.cnn_layers[idx].weight.data = cnn_model.layers[idx].weight.data
+
+        # affine output
 
         self.affine_output.weight.data = 0.333 * torch.cat(
             [

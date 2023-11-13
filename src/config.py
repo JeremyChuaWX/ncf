@@ -93,9 +93,9 @@ def get_configs(num_users: int, num_items: int):
         "use_mps": True,
         "device_id": 7,
         "pretrain": True,
-        "pretrain_mf": "checkpoints/{}".format("gmf_Epoch9_HR0.8815_NDCG0.6105.model"),
-        "pretrain_mlp": "checkpoints/{}".format("mlp_Epoch9_HR0.9257_NDCG0.6652.model"),
-        "pretrain_cnn": "checkpoints/{}".format("cnn_Epoch9_HR0.7855_NDCG0.5875.model"),
+        "pretrain_mf": "checkpoints/{}".format("gmf_Epoch9_HR0.9099_NDCG0.6254.model"),
+        "pretrain_mlp": "checkpoints/{}".format("mlp_Epoch9_HR0.9291_NDCG0.6677.model"),
+        "pretrain_cnn": "checkpoints/{}".format("cnn_Epoch9_HR0.6630_NDCG0.4633.model"),
         "model_dir": "checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model",
     }
 

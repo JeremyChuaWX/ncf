@@ -3,11 +3,21 @@ import torch
 from neumf import NeuMFEngine
 from torch.utils.data import DataLoader, Dataset
 from config import get_configs
+import argparse
+
+# Parse flags
+parser = argparse.ArgumentParser()
+parser.add_argument("--model", default=None, help="model to predict")
+parser.add_argument("--data", default=None, help="data to predict")
+args = parser.parse_args()
+
+assert args.data != None, "No data provided for prediction"
 
 # Load Data
 print("load data")
 
-data = pd.read_csv("./data/processed/combined1.csv")
+data = pd.read_csv(f"./data/processed/{args.data}")
+data["predicted"] = 0
 
 print("Range of userId is [{}, {}]".format(data.userId.min(), data.userId.max()))
 print("Range of itemId is [{}, {}]".format(data.itemId.min(), data.itemId.max()))
@@ -43,23 +53,24 @@ class PredictionDataset(Dataset):
 
 
 dataset = PredictionDataset(data)
-dataloader = DataLoader(dataset, batch_size=1, shuffle=True)
+dataloader = DataLoader(dataset, batch_size=1, shuffle=False)
 
-# Predict on user history
-print("predict on user history")
+# Predict dataset
+print("predict dataset")
 
-MODEL_STATE = "checkpoints/{}".format("neumf_Epoch9_HR0.0000_NDCG0.0000.model")
+MODEL_STATE = "checkpoints/{}".format(args.model)
 config = get_configs(num_users, num_items)["neumf_config"]
+config["use_mps"] = False
 engine = NeuMFEngine(config)
 engine.model.load_state_dict(torch.load(MODEL_STATE))
 engine.model.eval()
 
 with torch.no_grad():
-    for userId, itemId, rating in dataloader:
+    for idx, (userId, itemId, rating) in enumerate(dataloader):
         test_user, test_item = userId, itemId
         test_score = engine.model(test_user, test_item)
-        print(
-            ("test_user", "test_item", "test_score", "test_score * 5", "rating"),
-            (test_user, test_item, test_score, test_score * 5, rating),
-            sep="\n",
-        )
+        print(test_user, test_item, test_score.item() * 5, rating)
+        data["predicted"][idx] = test_score.item() * 5
+        break
+
+print(data.head())
