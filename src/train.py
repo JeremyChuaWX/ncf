@@ -4,7 +4,6 @@ from gmf import GMFEngine
 from mlp import MLPEngine
 from cnn import CNNEngine
 from neumf import NeuMFEngine
-from neumf2 import NeuMF2Engine
 from data import SampleGenerator
 import argparse
 
@@ -56,9 +55,6 @@ elif args.model == "cnn":
 elif args.model == "neumf":
     config = configs["neumf_config"]
     engine = NeuMFEngine(config)
-elif args.model == "neumf2":
-    config = configs["neumf_config"]
-    engine = NeuMF2Engine(config)
 
 assert config != None, "No model chosen for training"
 assert engine != None, "No model chosen for training"
