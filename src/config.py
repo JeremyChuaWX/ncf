@@ -14,6 +14,8 @@ def get_configs(num_users: int, num_items: int):
         "use_mps": True,
         "device_id": 0,
         "model_dir": "checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model",
+        "init": False,
+        "init": "epoch100/{}.model",
     }
 
     mlp_config = {
@@ -41,6 +43,8 @@ def get_configs(num_users: int, num_items: int):
             "gmf_factor8neg4_Epoch100_HR0.6391_NDCG0.2852.model"
         ),
         "model_dir": "checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model",
+        "init": False,
+        "init": "epoch100/{}.model",
     }
 
     cnn_config = {
@@ -68,6 +72,8 @@ def get_configs(num_users: int, num_items: int):
         "use_mps": True,
         "device_id": 7,
         "model_dir": "checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model",
+        "init": False,
+        "init": "epoch100/{}.model",
     }
 
     neumf_config = {
@@ -96,6 +102,8 @@ def get_configs(num_users: int, num_items: int):
         "pretrain_mlp": "checkpoints/{}".format("mlp_Epoch9_HR0.9291_NDCG0.6677.model"),
         "pretrain_cnn": "checkpoints/{}".format("cnn_Epoch9_HR0.6630_NDCG0.4633.model"),
         "model_dir": "checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model",
+        "init": False,
+        "init": "epoch100/{}.model",
     }
 
     return {

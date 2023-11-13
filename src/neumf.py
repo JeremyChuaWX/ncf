@@ -100,7 +100,10 @@ class NeuMF(torch.nn.Module):
         return rating
 
     def init_weight(self):
-        pass
+        if self.config["use_cuda"]:
+            resume_checkpoint(self, model_dir=self.config["init_dir"])
+        if self.config["use_mps"]:
+            resume_checkpoint_mps(self, model_dir=self.config["init_dir"])
 
     def load_pretrain_weights(self):
         """Loading weights from trained models"""
@@ -194,3 +197,6 @@ class NeuMFEngine(Engine):
 
         if config["pretrain"]:
             self.model.load_pretrain_weights()
+
+        if config["init"]:
+            self.model.init_weight()

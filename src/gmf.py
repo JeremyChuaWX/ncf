@@ -1,6 +1,6 @@
 import torch
 from engine import Engine
-from utils import use_cuda, use_mps
+from utils import resume_checkpoint_mps, use_cuda, use_mps, resume_checkpoint
 
 
 class GMF(torch.nn.Module):
@@ -32,7 +32,10 @@ class GMF(torch.nn.Module):
         return rating
 
     def init_weight(self):
-        pass
+        if self.config["use_cuda"]:
+            resume_checkpoint(self, model_dir=self.config["init_dir"])
+        if self.config["use_mps"]:
+            resume_checkpoint_mps(self, model_dir=self.config["init_dir"])
 
 
 class GMFEngine(Engine):
@@ -46,3 +49,6 @@ class GMFEngine(Engine):
             use_mps(self.model)
         super(GMFEngine, self).__init__(config)
         print(self.model)
+
+        if config["init"]:
+            self.model.init_weight()

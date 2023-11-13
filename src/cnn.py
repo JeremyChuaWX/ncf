@@ -1,6 +1,6 @@
 import torch
 from engine import Engine
-from utils import use_cuda, use_mps
+from utils import resume_checkpoint, resume_checkpoint_mps, use_cuda, use_mps
 
 
 class CNN(torch.nn.Module):
@@ -62,7 +62,10 @@ class CNN(torch.nn.Module):
         return rating
 
     def init_weight(self):
-        pass
+        if self.config["use_cuda"]:
+            resume_checkpoint(self, model_dir=self.config["init_dir"])
+        if self.config["use_mps"]:
+            resume_checkpoint_mps(self, model_dir=self.config["init_dir"])
 
 
 class CNNEngine(Engine):
@@ -76,3 +79,6 @@ class CNNEngine(Engine):
             use_mps(self.model)
         super(CNNEngine, self).__init__(config)
         print(self.model)
+
+        if config["init"]:
+            self.model.init_weight()
