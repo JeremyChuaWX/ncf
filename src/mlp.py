@@ -53,9 +53,7 @@ class MLP(torch.nn.Module):
         gmf_model = GMF(config)
         if config["use_cuda"] is True:
             gmf_model.cuda()
-        resume_checkpoint(
-            gmf_model, model_dir=config["pretrain_mf"], device_id=config["device_id"]
-        )
+        resume_checkpoint(gmf_model, model_dir=config["pretrain_mf"])
         self.embedding_user.weight.data = gmf_model.embedding_user.weight.data
         self.embedding_item.weight.data = gmf_model.embedding_item.weight.data
 
@@ -66,8 +64,7 @@ class MLPEngine(Engine):
     def __init__(self, config):
         self.model = MLP(config)
         if config["use_cuda"] is True:
-            use_cuda(config["device_id"])
-            self.model.cuda()
+            use_cuda(self.model)
         if config["use_mps"]:
             use_mps(self.model)
         super(MLPEngine, self).__init__(config)

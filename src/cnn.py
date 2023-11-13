@@ -71,8 +71,7 @@ class CNNEngine(Engine):
     def __init__(self, config):
         self.model = CNN(config)
         if config["use_cuda"] is True:
-            use_cuda(config["device_id"])
-            self.model.cuda()
+            use_cuda(self.model)
         if config["use_mps"]:
             use_mps(self.model)
         super(CNNEngine, self).__init__(config)

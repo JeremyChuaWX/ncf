@@ -111,12 +111,8 @@ class NeuMF(torch.nn.Module):
         config["latent_dim"] = config["latent_dim_mf"]
         gmf_model = GMF(config)
         if config["use_cuda"] is True:
-            gmf_model.cuda()
-            resume_checkpoint(
-                gmf_model,
-                model_dir=config["pretrain_mf"],
-                device_id=config["device_id"],
-            )
+            gmf_model.to("cuda")
+            resume_checkpoint(gmf_model, model_dir=config["pretrain_mf"])
         if config["use_mps"] is True:
             gmf_model.to("mps")
             resume_checkpoint_mps(
@@ -132,12 +128,8 @@ class NeuMF(torch.nn.Module):
         config["latent_dim"] = config["latent_dim_mlp"]
         mlp_model = MLP(config)
         if config["use_cuda"] is True:
-            mlp_model.cuda()
-            resume_checkpoint(
-                mlp_model,
-                model_dir=config["pretrain_mlp"],
-                device_id=config["device_id"],
-            )
+            mlp_model.to("cuda")
+            resume_checkpoint(mlp_model, model_dir=config["pretrain_mlp"])
         if config["use_mps"] is True:
             mlp_model.to("mps")
             resume_checkpoint_mps(
@@ -156,12 +148,8 @@ class NeuMF(torch.nn.Module):
         config["latent_dim"] = config["latent_dim_cnn"]
         cnn_model = CNN(config)
         if config["use_cuda"] is True:
-            cnn_model.cuda()
-            resume_checkpoint(
-                cnn_model,
-                model_dir=config["pretrain_cnn"],
-                device_id=config["device_id"],
-            )
+            cnn_model.to("cuda")
+            resume_checkpoint(cnn_model, model_dir=config["pretrain_cnn"])
         if config["use_mps"] is True:
             cnn_model.to("mps")
             resume_checkpoint_mps(
@@ -198,8 +186,7 @@ class NeuMFEngine(Engine):
     def __init__(self, config):
         self.model = NeuMF(config)
         if config["use_cuda"] is True:
-            use_cuda(config["device_id"])
-            self.model.cuda()
+            use_cuda(self.model)
         if config["use_mps"]:
             use_mps(self.model)
         super(NeuMFEngine, self).__init__(config)

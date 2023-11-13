@@ -41,8 +41,7 @@ class GMFEngine(Engine):
     def __init__(self, config):
         self.model = GMF(config)
         if config["use_cuda"] is True:
-            use_cuda(config["device_id"])
-            self.model.cuda()
+            use_cuda(self.model)
         if config["use_mps"]:
             use_mps(self.model)
         super(GMFEngine, self).__init__(config)

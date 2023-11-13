@@ -27,7 +27,11 @@ class Engine(object):
         assert hasattr(self, "model"), "Please specify the exact model!"
 
         if self.config["use_cuda"]:
-            users, items, ratings = users.cuda(), items.cuda(), ratings.cuda()
+            users, items, ratings = (
+                users.to("cuda"),
+                items.to("cuda"),
+                ratings.to("cuda"),
+            )
         if self.config["use_mps"]:
             users, items, ratings = users.to("mps"), items.to("mps"), ratings.to("mps")
 
@@ -62,10 +66,10 @@ class Engine(object):
             negative_users, negative_items = evaluate_data[2], evaluate_data[3]
 
             if self.config["use_cuda"]:
-                test_users = test_users.cuda()
-                test_items = test_items.cuda()
-                negative_users = negative_users.cuda()
-                negative_items = negative_items.cuda()
+                test_users = test_users.to("cuda")
+                test_items = test_items.to("cuda")
+                negative_users = negative_users.to("cuda")
+                negative_items = negative_items.to("cuda")
 
             if self.config["use_mps"]:
                 test_users = test_users.to("mps")
