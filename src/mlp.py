@@ -34,11 +34,11 @@ class MLP(torch.nn.Module):
         vector = torch.cat(
             [user_embedding, item_embedding], dim=-1
         )  # the concat latent vector
+
         for idx, _ in enumerate(range(len(self.fc_layers))):
             vector = self.fc_layers[idx](vector)
             vector = torch.nn.ReLU()(vector)
-            # vector = torch.nn.BatchNorm1d()(vector)
-            # vector = torch.nn.Dropout(p=0.5)(vector)
+
         logits = self.affine_output(vector)
         rating = self.logistic(logits)
         return rating

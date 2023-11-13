@@ -19,8 +19,8 @@ class CNN(torch.nn.Module):
         )
 
         self.layers = torch.nn.ModuleList()
-        for _, (in_channel, out_channel) in enumerate(
-            zip(config["channels"][:-1], config["channels"][1:])
+        for in_channel, out_channel in zip(
+            config["channels"][:-1], config["channels"][1:]
         ):
             self.layers.append(
                 torch.nn.Conv2d(
@@ -33,12 +33,12 @@ class CNN(torch.nn.Module):
             )
             self.latent_dim //= config["stride"]
 
-        self.relu = torch.nn.ReLU()
-
         self.affine_output = torch.nn.Linear(
             in_features=config["channels"][-1] * (self.latent_dim**2),
             out_features=1,
         )
+
+        self.logistic = torch.nn.Sigmoid()
 
     def forward(self, user_indices, item_indices):
         user_embedding = self.embedding_user(user_indices)
@@ -53,11 +53,12 @@ class CNN(torch.nn.Module):
 
         for idx in range(len(self.layers)):
             matrix = self.layers[idx](matrix)
-            matrix = self.relu(matrix)
+            matrix = torch.nn.ReLU()(matrix)
 
         vector = torch.flatten(matrix, start_dim=1)
 
-        rating = self.affine_output(vector)
+        logits = self.affine_output(vector)
+        rating = self.logistic(logits)
         return rating
 
     def init_weight(self):

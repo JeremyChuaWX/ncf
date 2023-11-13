@@ -6,20 +6,27 @@ from neumf import NeuMFEngine
 from data import SampleGenerator
 import argparse
 
-# TODO Parse flags
+# Parse flags
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", default=None, help="model to train")
+parser.add_argument("--data", default=None, help="data to train on")
 args = parser.parse_args()
 
 assert args.model != None, "No model chosen for training"
+assert args.data != None, "No data provided for training"
 
 # Load Data
 print("load data")
-data = pd.read_csv("./data/processed/combined1.csv")
+data = pd.read_csv(f"./data/processed/{args.data}")
 
-print("Range of userId is [{}, {}]".format(data.userId.min(), data.userId.max()))
-print("Range of itemId is [{}, {}]".format(data.itemId.min(), data.itemId.max()))
-print("Range of rating is [{}, {}]".format(data.rating.min(), data.rating.max()))
+print(f"Range of userId is [{data.userId.min()}, {data.userId.max()}]")
+print(f"Unique userIds {data.userId.nunique()}")
+
+print(f"Range of itemId is [{data.itemId.min()}, {data.itemId.max()}]")
+print(f"Unique itemIds {data.itemId.nunique()}")
+
+print(f"Range of rating is [{data.rating.min()}, {data.rating.max()}]")
+print(f"Unique ratings {data.rating.nunique()}")
 
 num_users = data.userId.max() + 1
 num_items = data.itemId.max() + 1
@@ -36,13 +43,6 @@ gmf_config = {
     "alias": "gmf",
     "num_epoch": 10,
     "batch_size": 1024,
-    # 'optimizer': 'sgd',
-    # 'sgd_lr': 1e-3,
-    # 'sgd_momentum': 0.9,
-    # 'optimizer': 'rmsprop',
-    # 'rmsprop_lr': 1e-3,
-    # 'rmsprop_alpha': 0.99,
-    # 'rmsprop_momentum': 0,
     "optimizer": "adam",
     "adam_lr": 1e-3,
     "num_users": num_users,
@@ -64,10 +64,9 @@ mlp_config = {
     "adam_lr": 1e-3,
     "num_users": num_users,
     "num_items": num_items,
-    "latent_dim": 8,
+    "latent_dim": 32,
     "num_negative": 4,
     "layers": [
-        16,
         64,
         32,
         16,
@@ -120,36 +119,23 @@ neumf_config = {
     "adam_lr": 1e-3,
     "num_users": num_users,
     "num_items": num_items,
-    "latent_dim_mf": 8,
-    "latent_dim_mlp": 8,
-    "latent_dim_cnn": 32,
+    "latent_dim_mf": gmf_config["latent_dim"],
+    "latent_dim_mlp": mlp_config["latent_dim"],
+    "latent_dim_cnn": cnn_config["latent_dim"],
     "num_negative": 4,
-    "layers": [
-        16,
-        64,
-        32,
-        16,
-        8,
-    ],  # layers[0] is the concat of latent user vector & latent item vector
-    "channels": [
-        1,
-        32,
-        32,
-        32,
-        32,
-        32,
-    ],
-    "stride": 2,
-    "kernel_size": 2,
-    "padding": 0,
+    "layers": mlp_config["layers"],
+    "channels": cnn_config["channels"],
+    "stride": cnn_config["stride"],
+    "kernel_size": cnn_config["kernel_size"],
+    "padding": cnn_config["padding"],
     "l2_regularization": 0.01,
     "use_cuda": False,
     "use_mps": True,
     "device_id": 7,
     "pretrain": True,
-    "pretrain_mf": "checkpoints/{}".format("gmf_Epoch9_HR0.9035_NDCG0.6151.model"),
-    "pretrain_mlp": "checkpoints/{}".format("mlp_Epoch9_HR0.9047_NDCG0.6352.model"),
-    "pretrain_cnn": "checkpoints/{}".format("cnn_Epoch0_HR0.6450_NDCG0.4465.model"),
+    "pretrain_mf": "checkpoints/{}".format("gmf_Epoch9_HR0.8815_NDCG0.6105.model"),
+    "pretrain_mlp": "checkpoints/{}".format("mlp_Epoch9_HR0.9257_NDCG0.6652.model"),
+    "pretrain_cnn": "checkpoints/{}".format("cnn_Epoch9_HR0.7855_NDCG0.5875.model"),
     "model_dir": "checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model",
 }
 
@@ -178,4 +164,6 @@ for epoch in range(config["num_epoch"]):
     )
     engine.train_an_epoch(train_loader, epoch_id=epoch)
     hit_ratio, ndcg = engine.evaluate(evaluate_data, epoch_id=epoch)
-    engine.save(config["alias"], epoch, hit_ratio, ndcg)
+
+    if epoch == config["num_epoch"] - 1:
+        engine.save(config["alias"], epoch, hit_ratio, ndcg)

@@ -54,15 +54,14 @@ class NeuMF(torch.nn.Module):
             )
             self.latent_dim_cnn //= config["stride"]
 
-        self.relu = torch.nn.ReLU()
-
         self.affine_output = torch.nn.Linear(
             in_features=config["latent_dim_mf"]
             + config["layers"][-1]
             + (config["channels"][-1] * (self.latent_dim_cnn**2)),
             out_features=1,
         )
-        self.logistic = torch.nn.Sigmoid()
+
+        self.logsitic = torch.nn.Sigmoid()
 
     def forward(self, user_indices, item_indices):
         user_embedding_mf = self.embedding_user_mf(user_indices)
@@ -90,13 +89,13 @@ class NeuMF(torch.nn.Module):
 
         for idx in range(len(self.cnn_layers)):
             cnn_matrix = self.cnn_layers[idx](cnn_matrix)
-            cnn_matrix = self.relu(cnn_matrix)
+            cnn_matrix = torch.nn.ReLU()(cnn_matrix)
 
         cnn_vector = torch.flatten(cnn_matrix, start_dim=1)
 
         vector = torch.cat([mlp_vector, mf_vector, cnn_vector], dim=-1)
         logits = self.affine_output(vector)
-        rating = self.logistic(logits)
+        rating = self.logsitic(logits)
         return rating
 
     def init_weight(self):
