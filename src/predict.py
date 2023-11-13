@@ -17,7 +17,7 @@ assert args.data != None, "No data provided for prediction"
 print("load data")
 
 data = pd.read_csv(f"./data/processed/{args.data}")
-data["predicted"] = 0
+data["predicted"] = 0.0
 
 print("Range of userId is [{}, {}]".format(data.userId.min(), data.userId.max()))
 print("Range of itemId is [{}, {}]".format(data.itemId.min(), data.itemId.max()))
