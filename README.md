@@ -4,7 +4,12 @@ A modified version of Yi Hong's implementation of NCF in Pytorch.
 
 ## Dataset
 
-[MovieLens 1M Dataset](https://grouplens.org/datasets/movielens/1m/)
+- Raw data
+  - [MovieLens 1M Dataset](https://grouplens.org/datasets/movielens/1m/)
+- Processed data
+  - [ratings.csv](https://drive.google.com/file/d/1adk2SlrZ_HlD9LW9G_2jBu5QkcFu6bV2/view?usp=sharing)
+  - [time.csv](https://drive.google.com/file/d/1IwThLzTlur7Sn1SO1BwPaFrOkHuOyBr-/view?usp=sharing)
+  - [time_weighted_rating_movielens1m.csv](https://drive.google.com/file/d/1vGGkFc_l4oe5aITyV9XWbM0MZXem3vrC/view?usp=sharing)
 
 ## Files
 
