@@ -39,7 +39,7 @@
 
 - All model configurations are kept in `./src/config.py` in the `get_configs` function which is used to initialise all model configs
 
-- If CUDA is available or using Apple Scilicon, you can enable the gpu flags in the configs to speed up training
+- If CUDA is available or using Apple Scilicon, you can enable the gpu flags in the base config to speed up training
 
   ```python
   # ./src/config.py
@@ -53,12 +53,13 @@
 
 ## Model Training
 
-- Run `train.py` with flags to pretrain the individual models
+- Run `train.py` with the following commands to pretrain the individual models
 
   ```bash
-  python3 train.py --model="gmf" --data="<processed data file>"
-  python3 train.py --model="mlp" --data="<processed data file>"
-  python3 train.py --model="cnn" --data="<processed data file>"
+  # run separately to train models individually
+  python3 train.py --model="gmf"
+  python3 train.py --model="mlp"
+  python3 train.py --model="cnn"
   ```
 
 - Replace the filenames (from `./src/checkpoints`) in `neumf_config` to load the pretrained model weights.
