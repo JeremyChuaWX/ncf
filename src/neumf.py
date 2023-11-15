@@ -66,7 +66,7 @@ class NeuMF(torch.nn.Module):
         )
         self.affine_output = torch.nn.Linear(in_features=3, out_features=1)
 
-        self.logsitic = torch.nn.Sigmoid()
+        self.relu = torch.nn.ReLU()
 
     def forward(self, user_indices, item_indices):
         user_embedding_mf = self.embedding_user_mf(user_indices)
@@ -99,12 +99,12 @@ class NeuMF(torch.nn.Module):
 
         cnn_vector = torch.flatten(cnn_matrix, start_dim=1)
 
-        mf_res = self.affine_output_mf(mf_vector)
-        mlp_res = self.affine_output_mlp(mlp_vector)
-        cnn_res = self.affine_output_cnn(cnn_vector)
+        mf_res = torch.nn.ReLU()(self.affine_output_mf(mf_vector))
+        mlp_res = torch.nn.ReLU()(self.affine_output_mlp(mlp_vector))
+        cnn_res = torch.nn.ReLU()(self.affine_output_cnn(cnn_vector))
         vector = torch.cat([mlp_res, mf_res, cnn_res], dim=-1)
         logits = self.affine_output(vector)
-        rating = self.logsitic(logits)
+        rating = self.relu(logits)
         return rating
 
     def init_weight(self):

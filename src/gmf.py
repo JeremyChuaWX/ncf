@@ -21,14 +21,14 @@ class GMF(torch.nn.Module):
             in_features=self.latent_dim, out_features=1
         )
 
-        self.logistic = torch.nn.Sigmoid()
+        self.relu = torch.nn.ReLU()
 
     def forward(self, user_indices, item_indices):
         user_embedding = self.embedding_user(user_indices)
         item_embedding = self.embedding_item(item_indices)
         element_product = torch.mul(user_embedding, item_embedding)
         logits = self.affine_output(element_product)
-        rating = self.logistic(logits)
+        rating = self.relu(logits)
         return rating
 
     def init_weight(self):

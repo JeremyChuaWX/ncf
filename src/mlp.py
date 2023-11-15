@@ -1,5 +1,4 @@
 import torch
-from gmf import GMF
 from engine import Engine
 from utils import resume_checkpoint_mps, use_cuda, resume_checkpoint, use_mps
 
@@ -27,7 +26,7 @@ class MLP(torch.nn.Module):
             in_features=config["layers"][-1], out_features=1
         )
 
-        self.logistic = torch.nn.Sigmoid()
+        self.relu = torch.nn.ReLU()
 
     def forward(self, user_indices, item_indices):
         user_embedding = self.embedding_user(user_indices)
@@ -41,7 +40,7 @@ class MLP(torch.nn.Module):
             vector = torch.nn.ReLU()(vector)
 
         logits = self.affine_output(vector)
-        rating = self.logistic(logits)
+        rating = self.relu(logits)
         return rating
 
     def init_weight(self):

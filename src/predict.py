@@ -123,3 +123,5 @@ print(f"model {args.model} with state {args.state}")
 print("user accuracy")
 print(user_acc)
 print("mean accuracy of all users:", mean_acc)
+
+user_acc.to_csv("./data/predict.csv")

@@ -38,7 +38,7 @@ class CNN(torch.nn.Module):
             out_features=1,
         )
 
-        self.logistic = torch.nn.Sigmoid()
+        self.relu = torch.nn.ReLU()
 
     def forward(self, user_indices, item_indices):
         user_embedding = self.embedding_user(user_indices)
@@ -58,7 +58,7 @@ class CNN(torch.nn.Module):
         vector = torch.flatten(matrix, start_dim=1)
 
         logits = self.affine_output(vector)
-        rating = self.logistic(logits)
+        rating = self.relu(logits)
         return rating
 
     def init_weight(self):
