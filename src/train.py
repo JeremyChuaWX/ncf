@@ -32,7 +32,7 @@ num_items = data.itemId.max() + 1
 
 # DataLoader for training
 print("initialise sample generator")
-sample_generator = SampleGenerator(ratings=data)
+sample_generator = SampleGenerator(data=data)
 evaluate_data = sample_generator.evaluate_data
 
 # Specify the exact model
@@ -60,9 +60,7 @@ assert engine != None, "No model chosen for training"
 for epoch in range(config["num_epoch"]):
     print("Epoch {} starts".format(epoch))
     print("-" * 80)
-    train_loader = sample_generator.instance_a_train_loader(
-        config["num_negative"], config["batch_size"]
-    )
+    train_loader = sample_generator.instance_a_train_loader(config["batch_size"])
     engine.train_an_epoch(train_loader, epoch_id=epoch)
-    hit_ratio, ndcg = engine.evaluate(evaluate_data, epoch_id=epoch)
-    engine.save(config["alias"], epoch, hit_ratio, ndcg)
+    acc = engine.evaluate(evaluate_data, epoch_id=epoch)
+    engine.save(config["alias"], epoch, acc)

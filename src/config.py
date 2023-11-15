@@ -1,5 +1,9 @@
 def get_configs(num_users: int, num_items: int):
-    base_config = {"use_cuda": False, "use_mps": True}
+    base_config = {
+        "use_cuda": False,
+        "use_mps": True,
+        "model_dir": "checkpoints/{}_Epoch{}_ACC{:.4f}.model",
+    }
 
     gmf_config = {
         "alias": "gmf",
@@ -15,7 +19,7 @@ def get_configs(num_users: int, num_items: int):
         "use_cuda": base_config["use_cuda"],
         "use_mps": base_config["use_mps"],
         "device_id": 0,
-        "model_dir": "checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model",
+        "model_dir": base_config["model_dir"],
         "init": False,
         "init_dir": "epoch100/{}.model",
     }
@@ -44,7 +48,7 @@ def get_configs(num_users: int, num_items: int):
         "pretrain_mf": "checkpoints/{}".format(
             "gmf_factor8neg4_Epoch100_HR0.6391_NDCG0.2852.model"
         ),
-        "model_dir": "checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model",
+        "model_dir": base_config["model_dir"],
         "init": False,
         "init_dir": "epoch100/{}.model",
     }
@@ -73,7 +77,7 @@ def get_configs(num_users: int, num_items: int):
         "use_cuda": base_config["use_cuda"],
         "use_mps": base_config["use_mps"],
         "device_id": 7,
-        "model_dir": "checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model",
+        "model_dir": base_config["model_dir"],
         "init": False,
         "init_dir": "epoch100/{}.model",
     }
@@ -100,10 +104,10 @@ def get_configs(num_users: int, num_items: int):
         "use_mps": base_config["use_mps"],
         "device_id": 7,
         "pretrain": True,
-        "pretrain_mf": "checkpoints/{}".format("gmf_Epoch9_HR0.9099_NDCG0.6254.model"),
-        "pretrain_mlp": "checkpoints/{}".format("mlp_Epoch9_HR0.9291_NDCG0.6677.model"),
-        "pretrain_cnn": "checkpoints/{}".format("cnn_Epoch9_HR0.6630_NDCG0.4633.model"),
-        "model_dir": "checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model",
+        "pretrain_mf": "epoch100/normal-gmf.model",
+        "pretrain_mlp": "epoch100/normal-mlp.model",
+        "pretrain_cnn": "epoch100/normal-cnn.model",
+        "model_dir": base_config["model_dir"],
         "init": False,
         "init_dir": "epoch100/{}.model",
     }

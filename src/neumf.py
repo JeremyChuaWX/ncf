@@ -54,12 +54,17 @@ class NeuMF(torch.nn.Module):
             )
             self.latent_dim_cnn //= config["stride"]
 
-        self.affine_output = torch.nn.Linear(
-            in_features=config["latent_dim_mf"]
-            + config["layers"][-1]
-            + (config["channels"][-1] * (self.latent_dim_cnn**2)),
+        self.affine_output_mf = torch.nn.Linear(
+            in_features=config["latent_dim_mf"], out_features=1
+        )
+        self.affine_output_mlp = torch.nn.Linear(
+            in_features=config["layers"][-1], out_features=1
+        )
+        self.affine_output_cnn = torch.nn.Linear(
+            in_features=config["channels"][-1] * (self.latent_dim_cnn**2),
             out_features=1,
         )
+        self.affine_output = torch.nn.Linear(in_features=3, out_features=1)
 
         self.logsitic = torch.nn.Sigmoid()
 
@@ -94,7 +99,10 @@ class NeuMF(torch.nn.Module):
 
         cnn_vector = torch.flatten(cnn_matrix, start_dim=1)
 
-        vector = torch.cat([mlp_vector, mf_vector, cnn_vector], dim=-1)
+        mf_res = self.affine_output_mf(mf_vector)
+        mlp_res = self.affine_output_mlp(mlp_vector)
+        cnn_res = self.affine_output_cnn(cnn_vector)
+        vector = torch.cat([mlp_res, mf_res, cnn_res], dim=-1)
         logits = self.affine_output(vector)
         rating = self.logsitic(logits)
         return rating
@@ -126,6 +134,8 @@ class NeuMF(torch.nn.Module):
         self.embedding_user_mf.weight.data = gmf_model.embedding_user.weight.data
         self.embedding_item_mf.weight.data = gmf_model.embedding_item.weight.data
 
+        self.affine_output_mf.weight.data = gmf_model.affine_output.weight.data
+
         # mlp
 
         config["latent_dim"] = config["latent_dim_mlp"]
@@ -145,6 +155,8 @@ class NeuMF(torch.nn.Module):
 
         for idx in range(len(self.fc_layers)):
             self.fc_layers[idx].weight.data = mlp_model.fc_layers[idx].weight.data
+
+        self.affine_output_mlp.weight.data = mlp_model.affine_output.weight.data
 
         # cnn
 
@@ -166,21 +178,7 @@ class NeuMF(torch.nn.Module):
         for idx in range(len(self.cnn_layers)):
             self.cnn_layers[idx].weight.data = cnn_model.layers[idx].weight.data
 
-        # affine output
-
-        self.affine_output.weight.data = 0.333 * torch.cat(
-            [
-                mlp_model.affine_output.weight.data,
-                gmf_model.affine_output.weight.data,
-                cnn_model.affine_output.weight.data,
-            ],
-            dim=-1,
-        )
-        self.affine_output.bias.data = 0.333 * (
-            mlp_model.affine_output.bias.data
-            + gmf_model.affine_output.bias.data
-            + cnn_model.affine_output.bias.data
-        )
+        self.affine_output_cnn.weight.data = cnn_model.affine_output.weight.data
 
 
 class NeuMFEngine(Engine):

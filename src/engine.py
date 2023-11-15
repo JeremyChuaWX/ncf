@@ -62,52 +62,42 @@ class Engine(object):
         assert hasattr(self, "model"), "Please specify the exact model!"
         self.model.eval()
         with torch.no_grad():
-            test_users, test_items = evaluate_data[0], evaluate_data[1]
-            negative_users, negative_items = evaluate_data[2], evaluate_data[3]
+            test_users, test_items, test_ratings = (
+                evaluate_data[0],
+                evaluate_data[1],
+                evaluate_data[2],
+            )
 
             if self.config["use_cuda"]:
                 test_users = test_users.to("cuda")
                 test_items = test_items.to("cuda")
-                negative_users = negative_users.to("cuda")
-                negative_items = negative_items.to("cuda")
+                test_ratings = test_ratings.to("cuda")
 
             if self.config["use_mps"]:
                 test_users = test_users.to("mps")
                 test_items = test_items.to("mps")
-                negative_users = negative_users.to("mps")
-                negative_items = negative_items.to("mps")
+                test_ratings = test_ratings.to("mps")
 
             test_scores = self.model(test_users, test_items)
-            negative_scores = self.model(negative_users, negative_items)
 
             if self.config["use_cuda"] or self.config["use_mps"]:
                 test_users = test_users.cpu()
                 test_items = test_items.cpu()
                 test_scores = test_scores.cpu()
-                negative_users = negative_users.cpu()
-                negative_items = negative_items.cpu()
-                negative_scores = negative_scores.cpu()
 
             self._metron.subjects = [
                 test_users.data.view(-1).tolist(),
                 test_items.data.view(-1).tolist(),
                 test_scores.data.view(-1).tolist(),
-                negative_users.data.view(-1).tolist(),
-                negative_items.data.view(-1).tolist(),
-                negative_scores.data.view(-1).tolist(),
+                test_ratings.data.view(-1).tolist(),
             ]
 
-        hit_ratio, ndcg = self._metron.cal_hit_ratio(), self._metron.cal_ndcg()
-        self._writer.add_scalar("performance/HR", hit_ratio, epoch_id)
-        self._writer.add_scalar("performance/NDCG", ndcg, epoch_id)
-        print(
-            "[Evluating Epoch {}] HR = {:.4f}, NDCG = {:.4f}".format(
-                epoch_id, hit_ratio, ndcg
-            )
-        )
-        return hit_ratio, ndcg
+        acc = self._metron.cal_acc()
+        self._writer.add_scalar("performance/ACC", acc, epoch_id)
+        print("[Evluating Epoch {}] ACC = {:.4f}".format(epoch_id, acc))
+        return acc
 
-    def save(self, alias, epoch_id, hit_ratio, ndcg):
+    def save(self, alias, epoch_id, acc):
         assert hasattr(self, "model"), "Please specify the exact model!"
-        model_dir = self.config["model_dir"].format(alias, epoch_id, hit_ratio, ndcg)
+        model_dir = self.config["model_dir"].format(alias, epoch_id, acc)
         save_checkpoint(self.model, model_dir)
