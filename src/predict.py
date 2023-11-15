@@ -8,7 +8,6 @@ import argparse
 # Parse flags
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", default=None, help="model to predict")
-parser.add_argument("--data", default=None, help="data to predict")
 args = parser.parse_args()
 
 assert args.data != None, "No data provided for prediction"
@@ -16,7 +15,7 @@ assert args.data != None, "No data provided for prediction"
 # Load Data
 print("load data")
 
-data = pd.read_csv(f"./data/processed/{args.data}")
+data = pd.read_csv("./data/processed/ratings.csv")
 data["predicted"] = 0.0
 
 print("Range of userId is [{}, {}]".format(data.userId.min(), data.userId.max()))
