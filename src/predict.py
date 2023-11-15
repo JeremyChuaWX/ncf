@@ -30,6 +30,7 @@ print("Range of rating is [{}, {}]".format(data.rating.min(), data.rating.max())
 
 num_users = data.userId.max() + 1
 num_items = data.itemId.max() + 1
+max_rating = data.rating.max()
 
 # Initialise dataloader
 print("initialise dataloader")
@@ -110,7 +111,7 @@ with torch.no_grad():
             test_score * 5,
             rating.item(),
         )
-        predicted_data.loc[idx, "predicted"] = test_score * 5
+        predicted_data.loc[idx, "predicted"] = test_score * max_rating
 
 predicted_data["diff"] = predicted_data["rating"] - predicted_data["predicted"]
 predicted_data["diff"] = predicted_data["diff"].abs()
