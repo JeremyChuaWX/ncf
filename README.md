@@ -21,18 +21,13 @@ A modified version of Yi Hong's implementation of NCF in Pytorch.
 
 ## Dependencies
 
-- Dependencies can be found in `./requirements.txt` but the main dependencies are:
-
-  - Pytorch
-  - Numpy
-  - Pandas
-  - TensorboardX
-
-- To install the dependencies from `./requirements.txt`, run the command
-
-  ```bash
-  pip install -r requirements.txt
-  ```
+- Pytorch
+- Numpy
+- Pandas
+- TensorboardX
+- SciKit Learn
+- Statsmodels
+- Matplotlib
 
 > \[!IMPORTANT\]
 > From this point onwards, please ensure your current working directory is `./src`.
