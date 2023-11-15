@@ -52,17 +52,30 @@ A modified version of Yi Hong's implementation of NCF in Pytorch.
 
   - The raw data folder should contain the file `ratings.dat` as such: `./src/data/raw/ratings.dat`
 
+- Run the `./src/time_weighted_movielens1m.ipynb` to get the time weighted ratings dataset
+
+  - The notebook will create a csv file `./src/data/processed/time_weighted_rating_movielens1m.csv`
+
 - Run `preprocess.py` to preprocess the data
 
   - The script will preprocess the raw `ratings.dat` file and store it in a csv file `./src/data/processed/ratings.csv`
 
-- TODO: instructions for time-decay ratings
+- Run `preprocess-time.py` to preprocess the time weighted data
+
+  - The script will preprocess the `time_weighted_rating_movielens1m.csv` file and store it in a csv file `./src/data/processed/time.csv`
 
 - Your final file structure should look like this
 
-```
-TODO: file tree here
-```
+  ```
+  - ./src
+    - /data
+      - /raw
+        - ratings.dat
+      - /processed
+        - ratings.csv
+        - time.csv
+        - time_weighted_rating_movielens1m.csv
+  ```
 
 ## Model Configuration
 
