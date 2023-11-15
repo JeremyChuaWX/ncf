@@ -10,13 +10,15 @@ import argparse
 # Parse flags
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", default=None, help="model to train")
+parser.add_argument("--data", default=None, help="data to train")
 args = parser.parse_args()
 
 assert args.model != None, "No model chosen for training"
+assert args.data != None, "No data chosen for training"
 
 # Load Data
 print("load data")
-data = pd.read_csv("./data/processed/ratings.csv")
+data = pd.read_csv(f"./data/processed/{args.data}")
 
 print(f"Range of userId is [{data.userId.min()}, {data.userId.max()}]")
 print(f"Unique userIds {data.userId.nunique()}")

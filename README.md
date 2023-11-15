@@ -96,13 +96,14 @@ A modified version of Yi Hong's implementation of NCF in Pytorch.
 
 ## Model Training
 
-- Run `train.py` with the following commands to pretrain the individual models
+- Run `train.py` with the following commands to pretrain the individual models.
+  Use the `data` flag to choose which dataset to train the model on.
 
   ```bash
   # run separately to train models individually
-  python3 train.py --model="gmf"
-  python3 train.py --model="mlp"
-  python3 train.py --model="cnn"
+  python3 train.py --model="gmf" --data="[ratings.csv|time.csv]"
+  python3 train.py --model="mlp" --data="[ratings.csv|time.csv]"
+  python3 train.py --model="cnn" --data="[ratings.csv|time.csv]"
   ```
 
   - Checkpoints for the model state will be generated for each epoch
@@ -126,7 +127,7 @@ A modified version of Yi Hong's implementation of NCF in Pytorch.
 - Run `train.py` with the `neumf` flag to train the final ensemble NCF model
 
   ```bash
-  python3 train.py --model="neumf"
+  python3 train.py --model="neumf" --data="[ratings.csv|time.csv]"
   ```
 
 ## Model Prediction
