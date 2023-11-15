@@ -8,7 +8,9 @@ A modified version of Yi Hong's implementation of NCF in Pytorch.
 
 ## Files
 
-- `preprocess.py`: preprocesss dataset
+- `time_weighted_movielens1m.ipynb`: generate time weighted ratings from raw data
+- `preprocess.py`: preprocesss raw data to be used in model training
+- `preprocess-time.py`: preprocesss time weighted data to be used in model training
 - `data.py`: prepare train/test dataset
 - `train.py`: entry point to train the models
 - `utils.py`: some handy functions for model training
@@ -18,6 +20,7 @@ A modified version of Yi Hong's implementation of NCF in Pytorch.
 - `cnn.py`: convolutional neural network model
 - `neumf.py`: ensemble of gmf, mlp and cnn
 - `engine.py`: training engine
+- `proxy.py`: calcluating custom metric used as a proxy of user retention rate
 
 ## Dependencies
 
@@ -146,6 +149,9 @@ A modified version of Yi Hong's implementation of NCF in Pytorch.
 
 - The scripts will output a csv file in the `./src/data` folder.
   Please rename the files before running each command to prevent them from being overridden.
+
+  - `predict_normal.csv`: result of the user predictions on `ratings.csv` dataset
+  - `predict_time.csv`: result of the user predictions on `time.csv` dataset
 
 ## Model Evaluation
 

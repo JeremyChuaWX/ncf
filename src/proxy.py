@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 import statsmodels.api as sm
 
-df = pd.read_csv("ratings.dat", delimiter="::", header=None)
+df = pd.read_csv("./data/raw/ratings.dat", delimiter="::", header=None)
 df.columns = ["UserID", "MovieID", "Rating", "Timestamp"]
 
-accuracy = pd.read_csv("predict_normal.csv")
+accuracy = pd.read_csv("./data/predict_time.csv")
 accuracy.rename(columns={"userId": "UserID"}, inplace=True)
 accuracy.rename(columns={"acc": "Accuracy"}, inplace=True)
 
