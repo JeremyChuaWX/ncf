@@ -1,4 +1,4 @@
-# neural-collaborative-filtering
+# Neural Collaborative Filtering
 
 A modified version of Yi Hong's implementation of NCF in Pytorch.
 
