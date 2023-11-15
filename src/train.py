@@ -36,7 +36,7 @@ sample_generator = SampleGenerator(ratings=data)
 evaluate_data = sample_generator.evaluate_data
 
 # Specify the exact model
-print("start traing model")
+print("start training model")
 
 configs = get_configs(num_users, num_items)
 
