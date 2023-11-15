@@ -22,7 +22,7 @@ class MetronAtK(object):
     def subjects(self, subjects):
         """
         args:
-            subjects: list, [test_users, test_items, test_scores, negative users, negative items, negative scores]
+            subjects: list, [test_users, test_items, test_scores, test_ratings]
         """
         assert isinstance(subjects, list)
         test_users, test_items, test_scores, test_ratings = (
@@ -43,5 +43,5 @@ class MetronAtK(object):
 
     def cal_acc(self):
         full = self._subjects
-        full["se"] = 0.5 * ((full["rating"] - full["score"]) ** 2)
-        return full["se"].mean()
+        full["acc"] = 1 - ((full["rating"] - full["score"]) / full["rating"])
+        return full["acc"].mean()
