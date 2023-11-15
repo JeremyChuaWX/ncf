@@ -71,12 +71,10 @@ class Engine(object):
             if self.config["use_cuda"]:
                 test_users = test_users.to("cuda")
                 test_items = test_items.to("cuda")
-                test_ratings = test_ratings.to("cuda")
 
             if self.config["use_mps"]:
                 test_users = test_users.to("mps")
                 test_items = test_items.to("mps")
-                test_ratings = test_ratings.to("mps")
 
             test_scores = self.model(test_users, test_items)
 
