@@ -22,6 +22,12 @@ A modified version of Yi Hong's implementation of NCF in Pytorch.
 - `engine.py`: training engine
 - `proxy.py`: calcluating custom metric used as a proxy of user retention rate
 
+## Directiories
+
+- `data/predicted`: predicted ratings
+- `data/processed`: processed data for model training
+- `data/raw`: raw dataset
+
 ## Dependencies
 
 - Pytorch
@@ -155,7 +161,11 @@ A modified version of Yi Hong's implementation of NCF in Pytorch.
 
 ## Model Evaluation
 
--
+- Run the proxy script to calculate the metrics for user retention
+
+  ```bash
+  python3 proxy.py
+  ```
 
 ## References
 
