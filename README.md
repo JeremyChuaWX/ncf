@@ -8,6 +8,7 @@
 
 - `preprocess.py`: preprocesss Kaggle data
 - `data.py`: prepare train/test dataset
+- `train.py`: entry point for train a NCF model
 - `utils.py`: some handy functions for model training etc.
 - `metrics.py`: evaluation metrics including hit ratio(HR) and NDCG
 - `gmf.py`: generalized matrix factorization model
@@ -15,9 +16,8 @@
 - `cnn.py`: convolutional neural network model
 - `neumf.py`: fusion of gmf, mlp and cnn
 - `engine.py`: training engine
-- `train.py`: entry point for train a NCF model
 
-## Instructions
+## Data Preprocessing
 
 - Download the raw data from [grouplens](https://grouplens.org/datasets/movielens/1m/)
 
@@ -29,12 +29,28 @@
 
 - Extract the raw data to `./src/data/raw`
 
+  - The raw data folder should contain the file `ratings.dat` as such: `./src/data/raw/ratings.dat`
+
 - Run `preprocess.py` to preprocess the data
 
-- If CUDA is available or using Apple Scilicon, you can enable the gpu flags in the configs (found in `./src/config.py`) accordingly to speed up training
+  - The script will preprocess the raw `ratings.dat` file and store it in a csv file `./src/data/processed/ratings.csv`
 
-  - `use_cuda`
-  - `use_mps`
+## Model Configuration
+
+- All model configurations are kept in `./src/config.py` in the `get_configs` function which is used to initialise all model configs
+
+- If CUDA is available or using Apple Scilicon, you can enable the gpu flags in the configs to speed up training
+
+  ```python
+  def get_configs(num_user, num_item):
+    base_config = {
+      "use_cuda": False, # set to true if CUDA is available
+      "use_mps": False, # set to true if using Apple Scilicon and Metal API is available
+    }
+    # ...
+  ```
+
+## Model Training
 
 - Run `train.py` with flags to pretrain the individual models
 

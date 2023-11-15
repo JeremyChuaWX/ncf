@@ -1,4 +1,6 @@
 def get_configs(num_users: int, num_items: int):
+    base_config = {"use_cuda": False, "use_mps": True}
+
     gmf_config = {
         "alias": "gmf",
         "num_epoch": 100,
@@ -10,8 +12,8 @@ def get_configs(num_users: int, num_items: int):
         "latent_dim": 8,
         "num_negative": 4,
         "l2_regularization": 0,  # 0.01
-        "use_cuda": False,
-        "use_mps": True,
+        "use_cuda": base_config["use_cuda"],
+        "use_mps": base_config["use_mps"],
         "device_id": 0,
         "model_dir": "checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model",
         "init": False,
@@ -35,8 +37,8 @@ def get_configs(num_users: int, num_items: int):
             8,
         ],  # layers[0] is the concat of latent user vector & latent item vector
         "l2_regularization": 0.0000001,  # MLP model is sensitive to hyper params
-        "use_cuda": False,
-        "use_mps": True,
+        "use_cuda": base_config["use_cuda"],
+        "use_mps": base_config["use_mps"],
         "device_id": 7,
         "pretrain": False,
         "pretrain_mf": "checkpoints/{}".format(
@@ -68,8 +70,8 @@ def get_configs(num_users: int, num_items: int):
         "kernel_size": 2,
         "padding": 0,
         "l2_regularization": 0.0000001,  # CNN model is sensitive to hyper params
-        "use_cuda": False,
-        "use_mps": True,
+        "use_cuda": base_config["use_cuda"],
+        "use_mps": base_config["use_mps"],
         "device_id": 7,
         "model_dir": "checkpoints/{}_Epoch{}_HR{:.4f}_NDCG{:.4f}.model",
         "init": False,
@@ -94,8 +96,8 @@ def get_configs(num_users: int, num_items: int):
         "kernel_size": cnn_config["kernel_size"],
         "padding": cnn_config["padding"],
         "l2_regularization": 0.01,
-        "use_cuda": False,
-        "use_mps": True,
+        "use_cuda": base_config["use_cuda"],
+        "use_mps": base_config["use_mps"],
         "device_id": 7,
         "pretrain": True,
         "pretrain_mf": "checkpoints/{}".format("gmf_Epoch9_HR0.9099_NDCG0.6254.model"),
