@@ -104,7 +104,7 @@ class SampleGenerator(object):
         for row in self.test_data.itertuples():
             test_users.append(int(row.userId))
             test_items.append(int(row.itemId))
-            test_ratings.append(int(row.rating))
+            test_ratings.append(float(row.rating))
 
         test_user_tensor = torch.LongTensor(test_users)
         assert torch.isfinite(test_user_tensor).all()
@@ -112,7 +112,7 @@ class SampleGenerator(object):
         test_item_tensor = torch.LongTensor(test_items)
         assert torch.isfinite(test_item_tensor).all()
 
-        test_rating_tensor = torch.LongTensor(test_ratings)
+        test_rating_tensor = torch.FloatTensor(test_ratings)
         assert torch.isfinite(test_rating_tensor).all()
 
         return [test_user_tensor, test_item_tensor, test_rating_tensor]
