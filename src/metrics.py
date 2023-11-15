@@ -43,5 +43,7 @@ class MetronAtK(object):
 
     def cal_acc(self):
         full = self._subjects
-        full["acc"] = 1 - ((full["rating"] - full["score"]) / full["rating"])
+        full["diff"] = full["rating"] - full["score"]
+        full["diff"] = full["diff"].abs()
+        full["acc"] = 1 - (full["diff"] / full["rating"])
         return full["acc"].mean()
