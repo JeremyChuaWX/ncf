@@ -1,4 +1,6 @@
-# Neural Collaborative Filtering
+# Recommendation Systems Group 10: Neural Collaborative Filtering
+
+> Source Code: https://github.com/JeremyChuaWX/ncf
 
 A modified version of Yi Hong's implementation of NCF in Pytorch.
 
