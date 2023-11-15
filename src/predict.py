@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--model", default=None, help="model to predict")
 args = parser.parse_args()
 
-assert args.data != None, "No data provided for prediction"
+assert args.model != None, "No model provided for prediction"
 
 # Load Data
 print("load data")
@@ -57,9 +57,13 @@ dataloader = DataLoader(dataset, batch_size=1, shuffle=False)
 # Predict dataset
 print("predict dataset")
 
-MODEL_STATE = "checkpoints/{}".format(args.model)
+MODEL_STATE = "epoch100/{}".format(args.model)
 config = get_configs(num_users, num_items)["neumf_config"]
+config["use_cuda"] = False
 config["use_mps"] = False
+config["pretrain"] = False
+config["init"] = False
+
 engine = NeuMFEngine(config)
 engine.model.load_state_dict(torch.load(MODEL_STATE))
 engine.model.eval()
@@ -68,8 +72,14 @@ with torch.no_grad():
     for idx, (userId, itemId, rating) in enumerate(dataloader):
         test_user, test_item = userId, itemId
         test_score = engine.model(test_user, test_item)
-        print(test_user, test_item, test_score.item() * 5, rating)
-        data["predicted"][idx] = test_score.item() * 5
-        break
+        test_score = test_score.item()
+        print(
+            test_user.item(),
+            test_item.item(),
+            test_score,
+            test_score * 5,
+            rating.item(),
+        )
+        # data["predicted"][idx] = test_score * 5
 
 print(data.head())
