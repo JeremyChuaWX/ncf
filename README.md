@@ -118,7 +118,25 @@ TODO: file tree here
 
 ## Model Prediction
 
-- TODO: instructions for model prediction
+- For convenience, the model states for the final model is provided in `./src/epoch100`.
+  These model states will be used for the prediction of user accuracies.
+
+- To predict the user accuracies, run the following commands
+
+  - Normal ratings
+
+    ```bash
+    python3 predict.py --model="neumf" --state="neumf_normal.model" --data="ratings.csv"
+    ```
+
+  - Time weighted ratings
+
+    ```bash
+    python3 predict.py --model="neumf" --state="neumf_time.model" --data="time.csv"
+    ```
+
+- The scripts will output a csv file in the `./src/data` folder.
+  Please rename the files before running each command to prevent them from being overridden.
 
 ## References
 

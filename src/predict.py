@@ -12,17 +12,19 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--model", default=None, help="model to predict")
 parser.add_argument("--state", default=None, help="model state to load")
+parser.add_argument("--data", default=None, help="data to predict")
 args = parser.parse_args()
 
 assert args.model != None, "No model name provided for prediction"
 assert args.state != None, "No model file provided for prediction"
+assert args.data != None, "No data provided for prediction"
 
-MODEL_STATE = "epoch100/{}".format(args.state)
+MODEL_STATE = f"epoch100/{args.state}"
 
 # Load Data
 print("load data")
 
-data = pd.read_csv("./data/processed/ratings.csv")
+data = pd.read_csv(f"./data/processed/{args.data}")
 
 print("Range of userId is [{}, {}]".format(data.userId.min(), data.userId.max()))
 print("Range of itemId is [{}, {}]".format(data.itemId.min(), data.itemId.max()))
