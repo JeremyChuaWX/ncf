@@ -24,10 +24,11 @@ A modified version of Yi Hong's implementation of NCF in Pytorch.
 
 ## Directiories
 
-- `checkpoints`: checkpoints of model state for each epoch during training
-- `data/predicted`: predicted ratings
-- `data/processed`: processed data for model training
-- `data/raw`: raw dataset
+- `./src/checkpoints`: checkpoints of model state for each epoch during training
+- `./src/data/predicted`: predicted ratings
+- `./src/data/processed`: processed data for model training
+- `./src/data/raw`: raw dataset
+- `./src/epoch100`: final model states
 
 ## Dependencies
 
