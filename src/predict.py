@@ -115,7 +115,7 @@ with torch.no_grad():
 predicted_data["diff"] = predicted_data["rating"] - predicted_data["predicted"]
 predicted_data["diff"] = predicted_data["diff"].abs()
 predicted_data["acc"] = 1 - (predicted_data["diff"] / predicted_data["rating"])
-user_acc = data.groupby("userId")["acc"].agg("mean")
+user_acc = predicted_data.groupby("userId")["acc"].agg("mean")
 mean_acc = user_acc.mean()
 
 print("-" * 80)
