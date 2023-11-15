@@ -72,7 +72,7 @@
 - Run `train.py` with the "neumf" flag to train the final ensemble NCF
 
   ```bash
-  python3 train.py --model="neumf" --data="<processed data file>"
+  python3 train.py --model="neumf"
   ```
 
 ## References
