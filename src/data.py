@@ -104,8 +104,14 @@ class SampleGenerator(object):
             test_users.append(int(row.userId))
             test_items.append(int(row.itemId))
             test_ratings.append(int(row.rating))
-        return [
-            torch.LongTensor(test_users),
-            torch.LongTensor(test_items),
-            torch.LongTensor(test_ratings),
-        ]
+
+        test_user_tensor = torch.LongTensor(test_users)
+        assert torch.isfinite(test_user_tensor).all()
+
+        test_item_tensor = torch.LongTensor(test_items)
+        assert torch.isfinite(test_item_tensor).all()
+
+        test_rating_tensor = torch.LongTensor(test_ratings)
+        assert torch.isfinite(test_rating_tensor).all()
+
+        return [test_user_tensor, test_item_tensor, test_rating_tensor]
