@@ -100,6 +100,7 @@ class SampleGenerator(object):
     def evaluate_data(self):
         """create evaluate data"""
         test_users, test_items, test_ratings = [], [], []
+
         for row in self.test_data.itertuples():
             test_users.append(int(row.userId))
             test_items.append(int(row.itemId))
