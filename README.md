@@ -42,6 +42,7 @@
 - If CUDA is available or using Apple Scilicon, you can enable the gpu flags in the configs to speed up training
 
   ```python
+  # ./src/config.py
   def get_configs(num_user, num_item):
     base_config = {
       "use_cuda": False, # set to true if CUDA is available
