@@ -74,14 +74,25 @@ class SampleGenerator(object):
     def instance_a_train_loader(self, batch_size):
         """instance train loader for one training epoch"""
         users, items, ratings = [], [], []
+
         for row in self.train_data.itertuples():
             users.append(int(row.userId))
             items.append(int(row.itemId))
             ratings.append(float(row.rating))
+
+        user_tensor = torch.LongTensor(users)
+        assert torch.isfinite(user_tensor).all()
+
+        item_tensor = torch.LongTensor(items)
+        assert torch.isfinite(item_tensor).all()
+
+        target_tensor = torch.FloatTensor(ratings)
+        assert torch.isfinite(target_tensor).all()
+
         dataset = UserItemRatingDataset(
-            user_tensor=torch.LongTensor(users),
-            item_tensor=torch.LongTensor(items),
-            target_tensor=torch.FloatTensor(ratings),
+            user_tensor=user_tensor,
+            item_tensor=item_tensor,
+            target_tensor=target_tensor,
         )
         return DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
